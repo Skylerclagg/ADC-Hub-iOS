@@ -105,7 +105,6 @@
 		3D1E7F4B2AAA1643009BA258 /* MatchNotes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchNotes.swift; sourceTree = "<group>"; };
 		3D1E7F4E2AAA2B4F009BA258 /* ADCHubData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ADCHubData.xcdatamodel; sourceTree = "<group>"; };
 		3D22AAA92BD9C16B001AD59E /* Config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Config.plist; sourceTree = "<group>"; };
-		3D2FDAF429A7A4A6009E9740 /* WorldSkillsRankings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldSkillsRankings.swift; sourceTree = "<group>"; };
 		3D3219C829D1CFF300EF5500 /* TeamEventsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamEventsView.swift; sourceTree = "<group>"; };
 		3D3219CA29D1EA0D00EF5500 /* EventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventView.swift; sourceTree = "<group>"; };
 		3D3219CC29D1EF1D00EF5500 /* EventInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventInformation.swift; sourceTree = "<group>"; };
@@ -277,7 +276,6 @@
 				3D84D7792A40A6320043F8ED /* EventDivisionMatches.swift */,
 				3D01A8C229DF3D55000BBDEB /* EventDivisionRankings.swift */,
 				3D919AEE29F6F70C00E1724F /* EventSkillsRankings.swift */,
-				3D2FDAF429A7A4A6009E9740 /* WorldSkillsRankings.swift */,
 				3D0BE6F829A3F0C700C3EA8A /* Lookup.swift */,
 			);
 			path = "ADC Hub";

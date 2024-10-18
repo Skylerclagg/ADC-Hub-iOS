@@ -1,3 +1,14 @@
+//
+//  WorldSkillsRankings.swift
+//
+//  ADC Hub
+//
+//  Based on
+//  VRC RoboScout by William Castro
+//
+//  Created by Skyler Clagg on 9/26/24.
+//
+
 import SwiftUI
 
 struct WorldSkillsTeam: Identifiable, Hashable {
@@ -57,36 +68,94 @@ struct WorldSkillsRow: View {
 
 class WorldSkillsTeams: ObservableObject {
     @Published var world_skills_teams: [WorldSkillsTeam]
-
-    init(teams: [WorldSkills] = []) {
-        self.world_skills_teams = teams.map { WorldSkillsTeam(world_skills: $0, ranking: $0.ranking) }
+        
+        
+        // Modify the initializer to accept a list of teams as a parameter
+        init(teams: [WorldSkills] = [], region: Int = 0, letter: Character = "0", filter_array: [String] = [], fetch: Bool = false) {
+            self.world_skills_teams = [WorldSkillsTeam]()
+            
+            if !teams.isEmpty {  // If teams are provided, initialize the object with them
+                var rank = 1
+                for team in teams {
+                    self.world_skills_teams.append(WorldSkillsTeam(world_skills: team, ranking: rank))
+                    rank += 1
+                }
+            } else if fetch {
+                // Fallback to fetching teams if fetch is true
+                let combinedTeams = API.update_combined_world_skills_cache()
+                var rank = 1
+                for team in combinedTeams {
+                    self.world_skills_teams.append(WorldSkillsTeam(world_skills: team, ranking: rank))
+                    rank += 1
+                }
+            } else {
+                if filter_array.count != 0 {
+                    var rank = 1
+                    for team in API.world_skills_cache.teams {
+                        if !filter_array.contains(team.team.number) {
+                            continue
+                        }
+                        self.world_skills_teams.append(WorldSkillsTeam(world_skills: team, ranking: rank, additional_ranking: team.ranking))
+                        rank += 1
+                    }
+                } else if region != 0 {
+                    var rank = 1
+                    for team in API.world_skills_cache.teams {
+                        if region != team.event_region_id {
+                            continue
+                        }
+                        self.world_skills_teams.append(WorldSkillsTeam(world_skills: team, ranking: rank, additional_ranking: team.ranking))
+                        rank += 1
+                    }
+                } else if letter != "0" {
+                    var rank = 1
+                    for team in API.world_skills_cache.teams {
+                        if letter != team.team.number.last {
+                            continue
+                        }
+                        self.world_skills_teams.append(WorldSkillsTeam(world_skills: team, ranking: rank, additional_ranking: team.ranking))
+                        rank += 1
+                    }
+                } else {
+                    if API.world_skills_cache.teams.isEmpty {
+                        return
+                    }
+                    for i in 0..<API.world_skills_cache.teams.count {
+                        let team = API.world_skills_cache.teams[i]
+                        self.world_skills_teams.append(WorldSkillsTeam(world_skills: team, ranking: team.ranking))
+                    }
+                }
+            }
     }
+
     
-    func updateTeams(teams: [WorldSkills]) {
+    // Add this method to dynamically update teams
+    func updateTeams(_ teams: [WorldSkills]) {
         self.world_skills_teams = teams.map { WorldSkillsTeam(world_skills: $0, ranking: $0.ranking) }
     }
 }
+
 
 struct WorldSkillsRankings: View {
     
     @EnvironmentObject var settings: UserSettings
     @EnvironmentObject var favorites: FavoriteStorage
     @EnvironmentObject var navigation_bar_manager: NavigationBarManager
-    
-    @ObservedObject private var world_skills_rankings = WorldSkillsTeams()  // Use @ObservedObject
-    
+
     @State private var display_skills = "World Skills"
     @State private var region_id = 0
     @State private var letter: Character = "0"
-    @State private var season_id = API.selected_season_id()
+    @State private var world_skills_rankings = WorldSkillsTeams(fetch: false)
     @State private var grade_level = UserSettings.getGradeLevel()
     @State private var show_leaderboard = false
     @State private var importing = true
-
+    @State private var selected_season: Int = API.selected_season_id()
+    
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
         VStack {
+            // Grade Level Picker
             Section("Grade Level") {
                 Picker("Grade Level", selection: $grade_level) {
                     Text("MS").tag("Middle School")
@@ -95,116 +164,100 @@ struct WorldSkillsRankings: View {
                 .pickerStyle(.segmented)
                 .padding([.top, .bottom], 5)
                 .onChange(of: grade_level) { grade in
-                    print("Grade level changed to: \(grade)")
                     updateWorldSkillsForGrade(grade: grade)
                 }
             }
-
-            if importing && API.world_skills_cache.teams.isEmpty {
-                ImportingData()
-                    .onReceive(timer) { _ in
-                        if API.imported_skills {
-                            print("Data imported, updating teams")
-                            world_skills_rankings.updateTeams(teams: API.world_skills_cache.teams)
-                            importing = false
+            Section("Season") {
+                if !API.season_id_map.isEmpty && !API.season_id_map[0].isEmpty {
+                    Picker("Season", selection: $selected_season) {
+                        ForEach(API.season_id_map[0].keys.sorted().reversed(), id: \.self) { season_id in
+                            Text(API.season_id_map[0][season_id] ?? "Unknown").tag(season_id)
                         }
                     }
-            } else if !importing && API.world_skills_cache.teams.isEmpty {
-                NoData()
-            } else {
-                // Season Filter
-                Menu("Filter") {
-                    if API.season_id_map.isEmpty {
-                        ProgressView()
-                    } else {
-                        // Season Filter
-                        Menu("Season") {
-                            Picker("Season", selection: $season_id) {
-                                ForEach(API.season_id_map[0].keys.sorted().reversed(), id: \.self) { season_id in
-                                    Text(API.season_id_map[0][season_id] ?? "Unknown").tag(season_id)
-                                }
-                            }
-                            .onChange(of: season_id) { newSeason in
-                                print("Selected season: \(newSeason)")
-                                updateWorldSkillsForSeason(newSeason: newSeason)
+                    .onChange(of: selected_season) { _ in
+                        settings.setSelectedSeasonID(id: selected_season)
+                        settings.updateUserDefaults(updateTopBarContentColor: false)
+                        DispatchQueue.global(qos: .userInteractive).async {
+                            API.populate_all_world_skills_caches()
+                            updateWorldSkillsForGrade(grade: grade_level)
+                            DispatchQueue.main.async {
                             }
                         }
                     }
-
-                    // Favorites Filter
-                    if !favorites.teams_as_array().isEmpty {
-                        Button("Favorites") {
-                            display_skills = "Favorites Skills"
-                            navigation_bar_manager.title = display_skills
-                            region_id = 0
-                            letter = "0"
-                            world_skills_rankings.updateTeams(teams: API.world_skills_cache.teams.filter { favorites.teams_as_array().contains($0.team.number) })
-                        }
+                } else {
+                    Text("No seasons available")
+                }
+            }
+            
+            // Season Filter
+            Menu("Filter") {
+                // Favorites Filter
+                if !favorites.teams_as_array().isEmpty {
+                    Button("Favorites") {
+                        display_skills = "Favorites Skills"
+                        navigation_bar_manager.title = display_skills
+                        region_id = 0
+                        letter = "0"
+                        world_skills_rankings = WorldSkillsTeams(filter_array: favorites.teams_as_array(), fetch: false)
                     }
-
-                    // Region Filter
-                    Menu("Region") {
-                        Button("World") {
-                            display_skills = "World Skills"
-                            navigation_bar_manager.title = display_skills
-                            region_id = 0
-                            letter = "0"
-                            world_skills_rankings.updateTeams(teams: API.world_skills_cache.teams)
-                        }
-                        ForEach(API.regions_map.sorted(by: <), id: \.key) { region, id in
-                            Button(region) {
-                                display_skills = "\(region) Skills"
-                                navigation_bar_manager.title = display_skills
-                                region_id = id
-                                letter = "0"
-                                world_skills_rankings.updateTeams(teams: API.world_skills_cache.teams.filter { $0.event_region_id == id })
-                            }
-                        }
-                    }
-
-                    // Letter Filter
-                    Menu("Letter") {
-                        ForEach(["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"], id: \.self) { char in
-                            Button(char) {
-                                display_skills = "\(char) Skills"
-                                navigation_bar_manager.title = display_skills
-                                letter = char.first!
-                                world_skills_rankings.updateTeams(teams: API.world_skills_cache.teams.filter { $0.team.number.last == char.first! })
-                            }
-                        }
-                    }
-
-                    Button("Clear Filters") {
+                }
+                
+                // Region Filter
+                Menu("Region") {
+                    Button("World") {
                         display_skills = "World Skills"
                         navigation_bar_manager.title = display_skills
                         region_id = 0
                         letter = "0"
-                        world_skills_rankings.updateTeams(teams: API.world_skills_cache.teams)
+                        world_skills_rankings = WorldSkillsTeams(fetch: false)
+                    }
+                    ForEach(API.regions_map.sorted(by: <), id: \.key) { region, id in
+                        Button(region) {
+                            display_skills = "\(region) Skills"
+                            navigation_bar_manager.title = display_skills
+                            region_id = id
+                            letter = "0"
+                            world_skills_rankings = WorldSkillsTeams(region: id, fetch: false)
+                        }
                     }
                 }
-                .fontWeight(.medium)
-                .font(.system(size: 19))
-                .padding(20)
-
-                if show_leaderboard {
-                    List(world_skills_rankings.world_skills_teams) { team in
-                        WorldSkillsRow(team_world_skills: team)
+                
+                // Letter Filter
+                Menu("Letter") {
+                    ForEach(["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"], id: \.self) { char in
+                        Button(char) {
+                            display_skills = "\(char) Skills"
+                            navigation_bar_manager.title = display_skills
+                            letter = char.first!
+                            world_skills_rankings = WorldSkillsTeams(letter: char.first!, fetch: false)
+                        }
                     }
+                }
+                
+                Button("Clear Filters") {
+                    display_skills = "World Skills"
+                    navigation_bar_manager.title = display_skills
+                    region_id = 0
+                    letter = "0"
+                    world_skills_rankings = WorldSkillsTeams(fetch: false)
+                }
+            }
+            .fontWeight(.medium)
+            .font(.system(size: 19))
+            .padding(20)
+            
+            if show_leaderboard {
+                List(world_skills_rankings.world_skills_teams) { team in
+                    WorldSkillsRow(team_world_skills: team)
                 }
             }
         }
         .onAppear {
-            print("View appeared, populating caches and displaying data")
             self.show_leaderboard = true
             navigation_bar_manager.title = display_skills
             API.populate_all_world_skills_caches()
-            if (API.selected_season_id() != season_id) || (UserSettings.getGradeLevel() != grade_level) || world_skills_rankings.world_skills_teams.isEmpty {
-                display_skills = "World Skills"
-                navigation_bar_manager.title = display_skills
-                region_id = 0
-                letter = "0"
-                world_skills_rankings.updateTeams(teams: API.world_skills_cache.teams)
-                season_id = API.selected_season_id()
+            if world_skills_rankings.world_skills_teams.isEmpty {
+                world_skills_rankings = WorldSkillsTeams(fetch: false)
                 grade_level = UserSettings.getGradeLevel()
             }
         }
@@ -219,13 +272,9 @@ struct WorldSkillsRankings: View {
             DispatchQueue.main.async {
                 switch grade {
                 case "Middle School":
-                    if !API.middle_school_world_skills_cache.teams.isEmpty {
-                        world_skills_rankings.updateTeams(teams: API.middle_school_world_skills_cache.teams)
-                    }
+                    world_skills_rankings = WorldSkillsTeams(teams: API.middle_school_world_skills_cache.teams)
                 case "High School":
-                    if !API.high_school_world_skills_cache.teams.isEmpty {
-                        world_skills_rankings.updateTeams(teams: API.high_school_world_skills_cache.teams)
-                    }
+                    world_skills_rankings = WorldSkillsTeams(teams: API.high_school_world_skills_cache.teams)
                 default:
                     break
                 }
@@ -235,15 +284,12 @@ struct WorldSkillsRankings: View {
     }
     
     private func updateWorldSkillsForSeason(newSeason: Int) {
+        // Update the selected season in settings
         settings.setSelectedSeasonID(id: newSeason)
         API.current_skills_season_id = newSeason
+
+        // Repopulate the caches for the new season
         API.populate_all_world_skills_caches()
         updateWorldSkillsForGrade(grade: grade_level)
-    }
-}
-
-struct WorldSkillsRankings_Previews: PreviewProvider {
-    static var previews: some View {
-        WorldSkillsRankings()
     }
 }

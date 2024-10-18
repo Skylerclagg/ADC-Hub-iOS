@@ -40,6 +40,7 @@ struct Lookup: View {
     @EnvironmentObject var favorites: FavoriteStorage
     @EnvironmentObject var dataController: ADCHubDataController
     @EnvironmentObject var navigation_bar_manager: NavigationBarManager
+    @State private var selected_season: Int = API.selected_season_id()
     
     var body: some View {
         VStack {
@@ -49,10 +50,31 @@ struct Lookup: View {
             }.pickerStyle(.segmented).padding()
             Spacer()
             if lookup_type == 0 {
+                Section("Season") {
+                    if !API.season_id_map.isEmpty && !API.season_id_map[0].isEmpty {
+                        Picker("Season", selection: $selected_season) {
+                            ForEach(API.season_id_map[0].keys.sorted().reversed(), id: \.self) { season_id in
+                                Text(API.season_id_map[0][season_id] ?? "Unknown").tag(season_id)
+                            }
+                        }
+                        .onChange(of: selected_season) { _ in
+                            settings.setSelectedSeasonID(id: selected_season)
+                            settings.updateUserDefaults(updateTopBarContentColor: false)
+                            DispatchQueue.global(qos: .userInteractive).async {
+                                API.populate_all_world_skills_caches()
+                                DispatchQueue.main.async {
+                                }
+                            }
+                        }
+                    } else {
+                        Text("No seasons available")
+                    }
+                }
                 TeamLookup()
                     .environmentObject(favorites)
                     .environmentObject(settings)
                     .environmentObject(dataController)
+               
             }
             else if lookup_type == 1 {
                 EventLookup()
@@ -296,6 +318,7 @@ struct TeamLookup: View {
         self._editable = State(initialValue: editable)
         self._fetch = State(initialValue: fetch)
     }
+    
     
     func fetch_info(number: String) {
         hideKeyboard()

@@ -61,8 +61,19 @@ public struct WorldSkillsCache {
     }
     
     public init(responses: [WorldSkillsResponse]) {
-        self.teams = responses.map{
-            WorldSkills(team: Team(id: $0.team.id, number: $0.team.team, fetch: false), ranking: $0.rank, event: Event(sku: $0.event.sku, fetch: false), driver: $0.scores.driver, programming: $0.scores.programming, highest_driver: $0.scores.maxDriver, highest_programming: $0.scores.maxProgramming, combined: $0.scores.score, event_region: $0.team.eventRegion, event_region_id: $0.team.eventRegionId)
+        self.teams = responses.map {
+            WorldSkills(
+                team: Team(id: $0.team.id, number: $0.team.team, fetch: false),
+                ranking: $0.rank,
+                event: Event(sku: $0.event.sku, fetch: false),
+                driver: $0.scores.driver,
+                programming: $0.scores.programming,
+                highest_driver: $0.scores.maxDriver,
+                highest_programming: $0.scores.maxProgramming,
+                combined: $0.scores.score,
+                event_region: $0.team.eventRegion,
+                event_region_id: $0.team.eventRegionId
+            )
         }
     }
 }
@@ -76,18 +87,8 @@ public class ADCHubAPI {
     public var imported_skills: Bool
     public var regions_map: [String: Int]
     public var imported_trueskill: Bool
-    public var season_id_map: [OrderedDictionary<Int, String>] // [VRC, VEXU]
+    public var season_id_map: [OrderedDictionary<Int, String>] // [ADC]
     public var level_map: [OrderedDictionary<Int, String>] = [
-        OrderedDictionary(uniqueKeysWithValues: [
-            (0, "All"),
-            (1, "Event Region Championship"),
-            (2, "National Championship"),
-            (3, "World Championship"),
-            (4, "Signature Event"),
-            (5, "JROTC Brigade Championship"),
-            (6, "JROTC National Championship"),
-            (7, "Showcase Event")
-        ]),
         OrderedDictionary(uniqueKeysWithValues: [
             (0, "All"),
             (1, "Event Region Championship"),
@@ -100,11 +101,6 @@ public class ADCHubAPI {
         ])
     ]
     public var grade_map: [OrderedDictionary<Int, String>] = [
-        OrderedDictionary(uniqueKeysWithValues: [
-            (0, "All"),
-            (1, "Middle School"),
-            (2, "High School"),
-        ]),
         OrderedDictionary(uniqueKeysWithValues: [
             (0, "All"),
             (1, "Middle School"),
@@ -131,8 +127,7 @@ public class ADCHubAPI {
         if localize {
             formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
             return formatter.date(from: date) ?? nil
-        }
-        else {
+        } else {
             formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
             var split = date.split(separator: "-")
             if !split.isEmpty {
@@ -182,7 +177,6 @@ public class ADCHubAPI {
                 }
             }
             
-            // Create URL Request using the request_url string, which is the URL we are going to use to get data from Robotevents
             let request = NSMutableURLRequest(url: URL(string: request_url)!)
             request.setValue(String(format: "Bearer %@", self.robotevents_access_key()), forHTTPHeaderField: "Authorization")
             request.httpMethod = "GET"
@@ -303,7 +297,6 @@ public class ADCHubAPI {
         return sku_array
     }
     
-    
     public func generate_season_id_map() {
         // Reset the season_id_map
         self.season_id_map = [[:]]
@@ -324,7 +317,7 @@ public class ADCHubAPI {
     }
     
     public static func selected_program_id() -> Int {
-        return 44
+        return 44 // Hardcoded to the desired program ID
     }
     
     public func selected_season_id() -> Int {
@@ -332,7 +325,7 @@ public class ADCHubAPI {
     }
     
     public func active_season_id() -> Int {
-        return !self.season_id_map.isEmpty ? (UserSettings.getGradeLevel() != "College" ? self.season_id_map[0] : self.season_id_map[1]).keys.first ?? (UserSettings.getGradeLevel() != "College" ? 190 : 191) : (UserSettings.getGradeLevel() != "College" ? 190 : 191)
+        return !self.season_id_map.isEmpty ? self.season_id_map[0].keys.first ?? 190 : 190
     }
     
     public func update_world_skills_cache(season: Int? = nil) {
@@ -378,125 +371,85 @@ public class ADCHubAPI {
         self.imported_skills = true
     }
     
-    public func update_combined_world_skills_cache() -> [WorldSkills] {
-        var combinedTeams = [WorldSkills]()
-        
-        let semaphore = DispatchSemaphore(value: 0)
-        
-        // Fetch Middle School Data
-        var middleSchoolComponents = URLComponents(string: String(format: "https://www.robotevents.com/api/seasons/%d/skills", self.selected_season_id()))!
-        middleSchoolComponents.queryItems = [URLQueryItem(name: "grade_level", value: "Middle School")]
-        
-        let middleSchoolRequest = NSMutableURLRequest(url: middleSchoolComponents.url! as URL)
-        middleSchoolRequest.httpMethod = "GET"
-        middleSchoolRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        var middleSchoolData: [WorldSkillsResponse] = []
-        
-        let middleSchoolTask = URLSession.shared.dataTask(with: middleSchoolRequest as URLRequest) { (response_data, response, error) in
-            if let data = response_data {
-                do {
-                    let decodedData = try JSONDecoder().decode([WorldSkillsResponse].self, from: data)
-                    middleSchoolData = decodedData
-                } catch {
-                    print("Failed to decode Middle School data")
-                }
-            }
-            semaphore.signal()
+    public func world_skills_for(team: Team) -> WorldSkills? {
+        if self.world_skills_cache.teams.isEmpty {
+            self.update_world_skills_cache()
         }
-        middleSchoolTask.resume()
-        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-        
-        // Fetch High School Data
-        var highSchoolComponents = URLComponents(string: String(format: "https://www.robotevents.com/api/seasons/%d/skills", self.selected_season_id()))!
-        highSchoolComponents.queryItems = [URLQueryItem(name: "grade_level", value: "High School")]
-        
-        let highSchoolRequest = NSMutableURLRequest(url: highSchoolComponents.url! as URL)
-        highSchoolRequest.httpMethod = "GET"
-        highSchoolRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        var highSchoolData: [WorldSkillsResponse] = []
-        
-        let highSchoolTask = URLSession.shared.dataTask(with: highSchoolRequest as URLRequest) { (response_data, response, error) in
-            if let data = response_data {
-                do {
-                    let decodedData = try JSONDecoder().decode([WorldSkillsResponse].self, from: data)
-                    highSchoolData = decodedData
-                } catch {
-                    print("Failed to decode High School data")
-                }
-            }
-            semaphore.signal()
-        }
-        highSchoolTask.resume()
-        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-        
-        // Combine both Middle and High School data
-        let combinedResponses = middleSchoolData + highSchoolData
-        combinedTeams = combinedResponses.map {
-            WorldSkills(
-                team: Team(id: $0.team.id, number: $0.team.team, fetch: false),
-                ranking: $0.rank,
-                event: Event(sku: $0.event.sku, fetch: false),
-                driver: $0.scores.driver,
-                programming: $0.scores.programming,
-                highest_driver: $0.scores.maxDriver,
-                highest_programming: $0.scores.maxProgramming,
-                combined: $0.scores.score,
-                event_region: $0.team.eventRegion,
-                event_region_id: $0.team.eventRegionId
-            )
-        }
-        
-        // Sort the combined list by the total combined score
-        let sortedCombinedTeams = combinedTeams.sorted(by: { $0.combined > $1.combined })
-        
-        // Reassign ranks based on the sorted order
-        for (index, team) in sortedCombinedTeams.enumerated() {
-            team.ranking = index + 1
-        }
-        
-        return sortedCombinedTeams
+        return self.world_skills_cache.teams.first{ $0.team.id == team.id }
     }
     
-    func populate_all_world_skills_caches() {
+    public func world_skills_place(ranking: Int) -> WorldSkills? {
+        if self.world_skills_cache.teams.isEmpty {
+            self.update_world_skills_cache()
+        }
+        if ranking < 1 || ranking > self.world_skills_cache.teams.count {
+            return nil
+        }
+        return self.world_skills_cache.teams[ranking - 1]
+    }
+    
+    public func update_combined_world_skills_cache() -> [WorldSkills] {
+        var combinedTeams = [WorldSkills]()
+
+        // Fetch Middle School skills cache
+        let middleSchoolTeams = self.middle_school_world_skills_cache.teams
+
+        // Fetch High School skills cache
+        let highSchoolTeams = self.high_school_world_skills_cache.teams
+
+        // Combine both caches into a single list of WorldSkills
+        combinedTeams.append(contentsOf: middleSchoolTeams)
+        combinedTeams.append(contentsOf: highSchoolTeams)
+
+        // Sort combined teams by their combined score in descending order
+        combinedTeams.sort { $0.combined > $1.combined }
+
+        print("Combined Cache: \(combinedTeams.count) teams")
+
+        for team in combinedTeams {
+            print("Team: \(team.team.number) Combined Score: \(team.combined)")
+        }
+
+        return combinedTeams
+    }
+
+    
+    public func populate_all_world_skills_caches() {
         print("Populating caches for the new season...")
-        
+        print("Selected season is: ", self.selected_season_id())
+        print ("active Season ID is: ", self.active_season_id())
+
         // Clear existing caches before fetching new data
-        API.middle_school_world_skills_cache = WorldSkillsCache()
-        API.high_school_world_skills_cache = WorldSkillsCache()
-        API.combined_world_skills_cache = WorldSkillsCache()
+        self.middle_school_world_skills_cache = WorldSkillsCache()
+        self.high_school_world_skills_cache = WorldSkillsCache()
 
         let dispatchGroup = DispatchGroup()
 
         // Fetch and store data in the Middle School cache
         dispatchGroup.enter()
-        fetch_world_skills(forGrade: "Middle School", season: API.current_skills_season_id) { middleSchoolTeams in
-            API.middle_school_world_skills_cache = WorldSkillsCache(responses: middleSchoolTeams)
-            print("Middle School Cache populated with \(API.middle_school_world_skills_cache.teams.count) teams.")
+        fetch_world_skills(forGrade: "Middle School", season: self.selected_season_id()) { middleSchoolTeams in
+            self.middle_school_world_skills_cache = WorldSkillsCache(responses: middleSchoolTeams)
+            print("Middle School Cache populated with \(self.middle_school_world_skills_cache.teams.count) teams.")
             dispatchGroup.leave()
         }
 
         // Fetch and store data in the High School cache
         dispatchGroup.enter()
-        fetch_world_skills(forGrade: "High School", season: API.current_skills_season_id) { highSchoolTeams in
-            API.high_school_world_skills_cache = WorldSkillsCache(responses: highSchoolTeams)
-            print("High School Cache populated with \(API.high_school_world_skills_cache.teams.count) teams.")
+        fetch_world_skills(forGrade: "High School", season: self.selected_season_id()) { highSchoolTeams in
+            self.high_school_world_skills_cache = WorldSkillsCache(responses: highSchoolTeams)
+            print("High School Cache populated with \(self.high_school_world_skills_cache.teams.count) teams.")
             dispatchGroup.leave()
         }
 
-        // After fetching both Middle School and High School data, update the combined cache
+        // After fetching both Middle School and High School data, ensure the combined cache is populated
         dispatchGroup.notify(queue: .main) {
-            let combinedTeams = API.middle_school_world_skills_cache.teams + API.high_school_world_skills_cache.teams
-            API.combined_world_skills_cache.teams = combinedTeams
-            print("Combined Cache: \(API.combined_world_skills_cache.teams.count) teams")
-            for team in API.combined_world_skills_cache.teams {
-                print("Team: \(team.team.number) Combined Score: \(team.combined)")
-            }
+            let combinedTeams = self.middle_school_world_skills_cache.teams + self.high_school_world_skills_cache.teams
+            self.combined_world_skills_cache.teams = combinedTeams
+            print("Combined Cache: \(self.combined_world_skills_cache.teams.count) teams")
         }
     }
 
-
+    
     func fetch_world_skills(forGrade grade: String, season: Int, completion: @escaping ([WorldSkillsResponse]) -> Void) {
         var components = URLComponents(string: String(format: "https://www.robotevents.com/api/seasons/%d/skills", season))!
         components.queryItems = [URLQueryItem(name: "grade_level", value: grade)]
@@ -522,77 +475,9 @@ public class ADCHubAPI {
         }
         task.resume()
     }
-
-
-
-
-
-    public func update_middle_school_cache() {
-        self.middle_school_world_skills_cache = self.fetch_world_skills_cache(forGrade: "Middle School")
-    }
-
-    public func update_high_school_cache() {
-        self.high_school_world_skills_cache = self.fetch_world_skills_cache(forGrade: "High School")
-    }
-
-    public func update_combined_cache() {
-        let middleSchoolTeams = self.middle_school_world_skills_cache.teams
-        let highSchoolTeams = self.high_school_world_skills_cache.teams
-        let combinedTeams = middleSchoolTeams + highSchoolTeams
-        let sortedCombinedTeams = combinedTeams.sorted(by: { $0.combined > $1.combined })
-        self.combined_world_skills_cache.teams = sortedCombinedTeams
-    }
-
-    private func fetch_world_skills_cache(forGrade grade: String) -> WorldSkillsCache {
-        var cache = WorldSkillsCache()
-        let semaphore = DispatchSemaphore(value: 0)
-        
-        var components = URLComponents(string: String(format: "https://www.robotevents.com/api/seasons/%d/skills", self.selected_season_id()))!
-        components.queryItems = [URLQueryItem(name: "grade_level", value: grade)]
-        
-        let request = NSMutableURLRequest(url: components.url! as URL)
-        request.httpMethod = "GET"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let task = URLSession.shared.dataTask(with: request as URLRequest) { (response_data, response, error) in
-            if let data = response_data {
-                do {
-                    let decodedData = try JSONDecoder().decode([WorldSkillsResponse].self, from: data)
-                    cache = WorldSkillsCache(responses: decodedData)
-                } catch {
-                    print("Failed to decode \(grade) data")
-                }
-            }
-            semaphore.signal()
-        }
-        task.resume()
-        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
-        
-        return cache
-    }
-
-
-
-    
-    public func world_skills_for(team: Team) -> WorldSkills? {
-        if self.world_skills_cache.teams.isEmpty {
-            self.update_world_skills_cache()
-        }
-        return self.world_skills_cache.teams.first{ $0.team.id == team.id }
-    }
-    
-    public func world_skills_place(ranking: Int) -> WorldSkills? {
-        if self.world_skills_cache.teams.isEmpty {
-            self.update_world_skills_cache()
-        }
-        if ranking < 1 || ranking > self.world_skills_cache.teams.count {
-            return nil
-        }
-        return self.world_skills_cache.teams[ranking - 1]
-    }
-    
 }
 
+// Additional classes and structs
 
 public class Division: Hashable, Identifiable {
     public var id: Int
@@ -697,12 +582,6 @@ public class Match: Identifiable {
         while self.blue_alliance.count < 2 {
             self.blue_alliance.append(Team())
         }
-        
-        /*if self.matchnum > 90 {
-            self.red_score = 0
-            self.blue_score = 0
-            self.started = nil
-        }*/
     }
     
     func fetch_full_info() {
@@ -877,8 +756,6 @@ public class TeamSkillsRanking {
     }
 }
 
-
-
 public class Event: Identifiable {
     
     public var id: Int
@@ -1043,7 +920,7 @@ public class Event: Identifiable {
     
     public func fetch_livestream_link() -> String? {
         
-        if let livestream_link {
+        if let livestream_link = self.livestream_link {
             return livestream_link
         }
         

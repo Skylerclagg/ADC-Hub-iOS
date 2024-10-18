@@ -196,6 +196,6 @@ class UserSettings: ObservableObject {
     }
     
     static func getSelectedSeasonID() -> Int {
-        return defaults.object(forKey: "selected_season_id") as? Int ?? API.active_season_id()
+        return defaults.object(forKey: "selected_season_id") as? Int ?? API.selected_season_id()
     }
 }
