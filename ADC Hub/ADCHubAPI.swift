@@ -414,10 +414,10 @@ public class ADCHubAPI {
     }
 
     
-    public func populate_all_world_skills_caches() {
+    public func populate_all_world_skills_caches(completion: @escaping () -> Void = {}) {
         print("Populating caches for the new season...")
         print("Selected season is: ", self.selected_season_id())
-        print ("active Season ID is: ", self.active_season_id())
+        print("Active Season ID is: ", self.active_season_id())
 
         // Clear existing caches before fetching new data
         self.middle_school_world_skills_cache = WorldSkillsCache()
@@ -446,8 +446,12 @@ public class ADCHubAPI {
             let combinedTeams = self.middle_school_world_skills_cache.teams + self.high_school_world_skills_cache.teams
             self.combined_world_skills_cache.teams = combinedTeams
             print("Combined Cache: \(self.combined_world_skills_cache.teams.count) teams")
+            // Call the completion handler here
+            completion()
         }
     }
+
+
 
     
     func fetch_world_skills(forGrade grade: String, season: Int, completion: @escaping ([WorldSkillsResponse]) -> Void) {

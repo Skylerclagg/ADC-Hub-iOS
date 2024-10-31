@@ -1,8 +1,12 @@
 //
 //  Settings.swift
-//  VRC RoboScout
 //
-//  Created by William Castro on 3/3/23.
+//  ADC Hub
+//
+//  Based on
+//  VRC RoboScout by William Castro
+//
+//  Created by Skyler Clagg on 9/26/24.
 //
 
 import SwiftUI
@@ -12,16 +16,15 @@ struct Settings: View {
     
     @EnvironmentObject var settings: UserSettings
     @EnvironmentObject var favorites: FavoriteStorage
-    @EnvironmentObject var dataController: RoboScoutDataController
+    @EnvironmentObject var dataController: ADCHubDataController
     @EnvironmentObject var navigation_bar_manager: NavigationBarManager
+   
     
     @State var selected_button_color = UserSettings().buttonColor()
     @State var selected_top_bar_color = UserSettings().topBarColor()
     @State var selected_top_bar_content_color = UserSettings().topBarContentColor()
     @State var top_bar_content_color_changed = false
     @State var minimalistic = UserSettings.getMinimalistic()
-    @State var adam_score = UserSettings.getAdamScore()
-    @State var performance_ratings_calculation_option = UserSettings.getPerformanceRatingsCalculationOption() == "via"
     @State var grade_level = UserSettings.getGradeLevel()
     @State var selected_season_id = UserSettings.getSelectedSeasonID()
     @State var apiKey = UserSettings.getRobotEventsAPIKey() ?? ""
@@ -49,7 +52,7 @@ struct Settings: View {
     
     func format_season_option(raw: String) -> String {
         var season = raw
-        season = season.replacingOccurrences(of: "VRC ", with: "").replacingOccurrences(of: "V5RC ", with: "").replacingOccurrences(of: "VEXU ", with: "").replacingOccurrences(of: "VURC ", with: "")
+        season = season.replacingOccurrences(of: "ADC ", with: "")
         
         let season_split = season.split(separator: "-")
         
@@ -63,78 +66,36 @@ struct Settings: View {
     var body: some View {
         VStack {
             List {
-                Link(destination: URL(string: "https://www.paypal.com/donate/?business=FGDW39F77H6PW&no_recurring=0&item_name=Donations+allow+me+to+bring+new+features+and+functionality+to+VRC+RoboScout.+Thank+you+for+your+support%21&currency_code=USD")!, label: {
-                    HStack {
-                        Image(systemName: "gift")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 40, height: 40)
-                            .cornerRadius(8)
-                        VStack(alignment: .center) {
-                            Text("Donate to ADC Hub").bold()
-                            Text("Donations support development. Thank you <3").font(.system(size: 15)).foregroundColor(.secondary).multilineTextAlignment(.center)
-                        }.frame(maxWidth: .infinity).padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
-                        Spacer()
-                    }.padding()
-                }).frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
-                    .background(settings.buttonColor().opacity(0.3))
-                    .cornerRadius(20)
-                Section("Competition") {
-                    Picker("Competition", selection: $grade_level) {
-                        Text("V5RC MS").tag("Middle School")
-                        Text("V5RC HS").tag("High School")
-                        Text("VURC").tag("College")
-                    }.pickerStyle(.segmented).padding([.top, .bottom], 5)
-                        .onChange(of: grade_level) { grade in
-                            settings.setGradeLevel(grade_level: grade)
-                            settings.updateUserDefaults(updateTopBarContentColor: false)
-                            self.showLoading = true
-                            DispatchQueue.global(qos: .userInteractive).async {
-                                API.generate_season_id_map()
-                                settings.setSelectedSeasonID(id: API.season_id_map[UserSettings.getGradeLevel() != "College" ? 0 : 1].keys.sorted().reversed()[0])
-                                settings.updateUserDefaults(updateTopBarContentColor: false)
-                                API.update_world_skills_cache()
-                                API.update_vrc_data_analysis_cache()
-                                DispatchQueue.main.async {
-                                    self.selected_season_id = UserSettings.getSelectedSeasonID()
-                                    self.showLoading = false
-                                }
-                            }
-                            
-                        }
+                Section("Season Selector") {
                     HStack {
                         Spacer()
                         if showLoading || API.season_id_map.isEmpty {
                             ProgressView()
-                        }
-                        else {
+                        } else {
                             Picker("Season", selection: $selected_season_id) {
-                                ForEach(API.season_id_map[UserSettings.getGradeLevel() != "College" ? 0 : 1].keys.sorted().reversed(), id: \.self) { season_id in
-                                    Text(format_season_option(raw: API.season_id_map[UserSettings.getGradeLevel() != "College" ? 0 : 1][season_id] ?? "Unknown")).tag(season_id)
+                                ForEach(API.season_id_map[0].keys.sorted().reversed(), id: \.self) { season_id in
+                                    Text(format_season_option(raw: API.season_id_map[0][season_id] ?? "Unknown")).tag(season_id)
                                 }
-                            }.labelsHidden()
-                                .onChange(of: selected_season_id) { _ in
-                                    settings.setSelectedSeasonID(id: selected_season_id)
-                                    settings.updateUserDefaults(updateTopBarContentColor: false)
-                                    self.showLoading = true
-                                    DispatchQueue.global(qos: .userInteractive).async {
-                                        API.update_world_skills_cache()
-                                        DispatchQueue.main.async {
-                                            self.showLoading = false
-                                        }
+                            }
+                            .labelsHidden()
+                            .onChange(of: selected_season_id) { _ in
+                                settings.setSelectedSeasonID(id: selected_season_id)
+                                settings.updateUserDefaults(updateTopBarContentColor: false)
+                                self.showLoading = false
+                                DispatchQueue.global(qos: .userInteractive).async {
+                                    API.populate_all_world_skills_caches()
+                                    DispatchQueue.main.async {
+                                        self.showLoading = false
                                     }
                                 }
+                            }
                         }
                         Spacer()
                     }
                 }
-            
+                
+                
                 Section("Appearance") {
-                    NavigationLink(destination: ChangeAppIcon().environmentObject(settings)) {
-                        Text("Change App Icon")
-                    }
                     ColorPicker("Top Bar Color", selection: $selected_top_bar_color, supportsOpacity: false).onChange(of: selected_top_bar_color) { _ in
                         settings.setTopBarColor(color: selected_top_bar_color)
                         showApply = true
@@ -155,7 +116,8 @@ struct Settings: View {
                     if showApply {
                         Button("Apply changes") {
                             confirmAppearance = true
-                        }.confirmationDialog("Are you sure?", isPresented: $confirmAppearance) {
+                        }
+                        .confirmationDialog("Are you sure?", isPresented: $confirmAppearance) {
                             Button("Apply and close app?", role: .destructive) {
                                 settings.updateUserDefaults(updateTopBarContentColor: top_bar_content_color_changed)
                                 print("App Closing")
@@ -164,22 +126,15 @@ struct Settings: View {
                         }
                     }
                 }
-                Section("Customization") {
-                    Toggle("Show statistics by default on Team Info page", isOn: $team_info_default_page).onChange(of: team_info_default_page) { _ in
-                        settings.setTeamInfoDefaultPage(page: team_info_default_page ? "statistics" : "events")
-                        settings.updateUserDefaults(updateTopBarContentColor: false)
-                    }
-                    Toggle("Show statistics by default on Match Team page", isOn: $match_team_default_page).onChange(of: match_team_default_page) { _ in
-                        settings.setMatchTeamDefaultPage(page: match_team_default_page ? "statistics" : "matches")
-                        settings.updateUserDefaults(updateTopBarContentColor: false)
-                    }
-                }
+                
                 Section("Danger") {
                     Button("Clear favorite teams") {
                         confirmClearTeams = true
-                    }.alert(isPresented: $clearedTeams) {
+                    }
+                    .alert(isPresented: $clearedTeams) {
                         Alert(title: Text("Cleared favorite teams"), dismissButton: .default(Text("OK")))
-                    }.confirmationDialog("Are you sure?", isPresented: $confirmClearTeams) {
+                    }
+                    .confirmationDialog("Are you sure?", isPresented: $confirmClearTeams) {
                         Button("Clear ALL favorited teams?", role: .destructive) {
                             defaults.set([String](), forKey: "favorite_teams")
                             favorites.favorite_teams = [String]()
@@ -189,9 +144,11 @@ struct Settings: View {
                     }
                     Button("Clear favorite events") {
                         confirmClearEvents = true
-                    }.alert(isPresented: $clearedEvents) {
+                    }
+                    .alert(isPresented: $clearedEvents) {
                         Alert(title: Text("Cleared favorite events"), dismissButton: .default(Text("OK")))
-                    }.confirmationDialog("Are you sure?", isPresented: $confirmClearEvents) {
+                    }
+                    .confirmationDialog("Are you sure?", isPresented: $confirmClearEvents) {
                         Button("Clear ALL favorited events?", role: .destructive) {
                             defaults.set([String](), forKey: "favorite_events")
                             favorites.favorite_events = [String]()
@@ -201,47 +158,39 @@ struct Settings: View {
                     }
                     Button("Clear all match notes") {
                         confirmClearNotes = true
-                    }.alert(isPresented: $clearedNotes) {
+                    }
+                    .alert(isPresented: $clearedNotes) {
                         Alert(title: Text("Cleared match notes"), dismissButton: .default(Text("OK")))
-                    }.confirmationDialog("Are you sure?", isPresented: $confirmClearNotes) {
+                    }
+                    .confirmationDialog("Are you sure?", isPresented: $confirmClearNotes) {
                         Button("Clear ALL match notes?", role: .destructive) {
                             dataController.deleteAllNotes()
                             clearedNotes = true
                         }
                     }
                 }
+                
                 Section("Developer") {
-                    HStack {
-                        Text("RobotEvents API Key")
-                        Spacer()
-                        SecureField("Enter Key", text: $apiKey, onCommit: {
-                            confirmAPIKey = true
-                        }).confirmationDialog("Are you sure?", isPresented: $confirmAPIKey) {
-                            Button("Set API Key and close app?", role: .destructive) {
-                                defaults.set(apiKey, forKey: "robotevents_api_key")
-                                print("Set RobotEvents API Key")
-                                exit(0)
-                            }
-                        }
-                    }
-                    HStack {
+                                        HStack {
                         Text("Version")
                         Spacer()
                         Text("\(UIApplication.appVersion!) (\(UIApplication.appBuildNumber!))\(self.mode)")
                     }
                 }
-                Section("Developed by Teams Ace 229V and Jelly 2733J") {}
+                
+                Section("Developed by Skyler Clagg, based on Teams Ace 229V and Jelly 2733J's VRC Roboscout") {}
             }
-            Link("Join the Discord Server", destination: URL(string: "https://discord.gg/KczJZUfs5f")!).padding()
-        }.onAppear{
+//            Link("Join the Discord Server", destination: URL(string: "https://discord.gg/KczJZUfs5f")!).padding()
+        }
+        .onAppear {
             navigation_bar_manager.title = "Settings"
             settings.readUserDefaults()
         }
     }
-}
-
-struct Settings_Previews: PreviewProvider {
-    static var previews: some View {
-        Settings()
+    
+    struct Settings_Previews: PreviewProvider {
+        static var previews: some View {
+            Settings()
+        }
     }
 }

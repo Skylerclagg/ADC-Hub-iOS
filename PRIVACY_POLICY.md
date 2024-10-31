@@ -1,6 +1,5 @@
 # Privacy Policy
-
-William Castro built the VRC RoboScout app as an Open Source app. This SERVICE is provided by William Castro at no cost and is intended for use as is.
+Skyler Clagg built the ADC Hub app based on Wiliam Castro's VRC Roboscout as an Open Source app. This SERVICE is provided by Skyler Clagg at no cost and is intended for use as is.
 
 This page is used to inform visitors regarding my policies with the collection, use, and disclosure of Personal Information if anyone decided to use my Service.
 
@@ -49,8 +48,8 @@ I do not knowingly collect personally identifiable information from children. I 
 
 I may update our Privacy Policy from time to time. Thus, you are advised to review this page periodically for any changes. I will notify you of any changes by posting the new Privacy Policy on this page.
 
-This policy is effective as of 2023-10-16.
+This policy is effective as of 2024-10-28.
 
 ## Contact Us
 
-If you have any questions or suggestions about my Privacy Policy, do not hesitate to contact me at willcas2005@icloud.com.
+If you have any questions or suggestions about my Privacy Policy, do not hesitate to contact me at skylerclagg1@gmail.com.

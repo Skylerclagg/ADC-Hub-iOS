@@ -19,142 +19,126 @@ class NavigationBarManager: ObservableObject {
 }
 
 struct RootView: View {
+    
+    
     @EnvironmentObject var settings: UserSettings
     @EnvironmentObject var favorites: FavoriteStorage
     @EnvironmentObject var dataController: ADCHubDataController
-
+    
     @StateObject var navigation_bar_manager = NavigationBarManager(title: "Favorites")
-
+    
     @State private var tab_selection = 0
     @State private var lookup_type = 0 // 0 is teams, 1 is events
-
+        
     var body: some View {
-        NavigationView {
+        NavigationStack {
             TabView(selection: $tab_selection) {
-                // Favorites Tab
                 Favorites(tab_selection: $tab_selection, lookup_type: $lookup_type)
                     .tabItem {
                         if UserSettings.getMinimalistic() {
                             Image(systemName: "star")
-                        } else {
+                        }
+                        else {
                             Label("Favorites", systemImage: "star")
                         }
                     }
-                    .tag(0)
                     .environmentObject(favorites)
                     .environmentObject(settings)
                     .environmentObject(dataController)
                     .environmentObject(navigation_bar_manager)
                     .tint(settings.buttonColor())
-
-                // World Skills Rankings Tab
+                    .tag(0)
                 WorldSkillsRankings()
                     .tabItem {
                         if UserSettings.getMinimalistic() {
                             Image(systemName: "globe")
-                        } else {
+                        }
+                        else {
                             Label("World Skills", systemImage: "globe")
                         }
                     }
-                    .tag(1)
                     .environmentObject(favorites)
                     .environmentObject(settings)
                     .environmentObject(dataController)
                     .environmentObject(navigation_bar_manager)
                     .tint(settings.buttonColor())
-
-                // Lookup Tab
+                    .tag(1)
                 Lookup(lookup_type: $lookup_type)
                     .tabItem {
                         if UserSettings.getMinimalistic() {
                             Image(systemName: "magnifyingglass")
-                        } else {
+                        }
+                        else {
                             Label("Lookup", systemImage: "magnifyingglass")
                         }
                     }
-                    .tag(2)
                     .environmentObject(favorites)
                     .environmentObject(settings)
                     .environmentObject(dataController)
                     .environmentObject(navigation_bar_manager)
                     .tint(settings.buttonColor())
-
-                // Game Manual Tab
+                    .tag(2)
                 GameManual()
-                    .tabItem {
-                        if UserSettings.getMinimalistic() {
+                    .tabItem{
+                        if UserSettings.getMinimalistic(){
                             Image(systemName: "book")
-                        } else {
+                        }
+                        else{
                             Label("Game Manual", systemImage: "book")
                         }
                     }
-                    .tag(3)
                     .environmentObject(favorites)
                     .environmentObject(settings)
                     .environmentObject(dataController)
                     .environmentObject(navigation_bar_manager)
                     .tint(settings.buttonColor())
-
-                // Score Calculator Tab
-                ScoreCalculator()
+                    .tag(3)
+                ScoreCalculatorsHome()
                     .tabItem {
-                        if UserSettings.getMinimalistic() {
+                        if UserSettings.getMinimalistic(){
                             Image(systemName: "ipad")
-                        } else {
-                            Label("Calculator", systemImage: "ipad")
+                        }else{
+                            Label("Calculators", systemImage: "ipad")
                         }
                     }
-                    .tag(4)
                     .environmentObject(favorites)
                     .environmentObject(settings)
                     .environmentObject(dataController)
                     .environmentObject(navigation_bar_manager)
                     .tint(settings.buttonColor())
-            }
-            .onAppear {
+                    .tag(4)
+            }.onAppear {
                 let tabBarAppearance = UITabBarAppearance()
                 tabBarAppearance.configureWithDefaultBackground()
                 UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
-            }
-            .tint(settings.buttonColor())
-            .background(Color.clear)
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle(navigation_bar_manager.title)
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    VStack {
-                        Text(navigation_bar_manager.title)
-                            .fontWeight(.medium)
-                            .font(.system(size: 19))
-                            .foregroundColor(settings.topBarContentColor())
-                        // Add any subtitle or additional text if needed
-                    }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink(destination: Settings()
-                        .environmentObject(favorites)
-                        .environmentObject(settings)
-                        .environmentObject(dataController)
-                        .environmentObject(navigation_bar_manager)
-                        .tint(settings.buttonColor())
-                    ) {
-                        Image(systemName: "gearshape")
-                    }
-                }
-                if navigation_bar_manager.title.contains("Skills") {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Link(destination: URL(string: "https://www.robotevents.com/robot-competitions/adc/standings/skills")!) {
-                            Image(systemName: "link")
+            }.tint(settings.buttonColor())
+                .background(.clear)
+                        .toolbar {
+                            ToolbarItem(placement: .principal) {
+                                VStack {
+                                    Text(navigation_bar_manager.title)
+                                        .fontWeight(.medium)
+                                        .font(.system(size: 19))
+                                        .foregroundColor(settings.topBarContentColor())
+                                }
+                            }
+                            ToolbarItem(placement: .topBarTrailing) {
+                                NavigationLink(destination: Settings().environmentObject(favorites).environmentObject(settings).environmentObject(dataController).environmentObject(navigation_bar_manager).tint(settings.buttonColor()).tag(4)) { // Referencing Settings struct from another file
+                                    Image(systemName: "gearshape")
+                                }
+                            }
+                            if navigation_bar_manager.title.contains("Skills") {
+                                ToolbarItem(placement: .navigationBarTrailing) {
+                                    Link(destination: URL(string: "https://www.robotevents.com/robot-competitions/adc/standings/skills")!) {
+                                        Image(systemName: "link")
+                                    }.foregroundColor(settings.topBarContentColor())
+                                }
+                            }
                         }
-                        .foregroundColor(settings.topBarContentColor())
-                    }
-                }
-            }
-            .toolbarBackground(settings.tabColor(), for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
-        }
-        .navigationViewStyle(StackNavigationViewStyle()) // Ensures consistent behavior on iPad
-        .tint(settings.topBarContentColor())
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbarBackground(settings.tabColor(), for: .navigationBar)
+                        .toolbarBackground(.visible, for: .navigationBar)
+        }.tint(settings.topBarContentColor())
     }
 }
 
