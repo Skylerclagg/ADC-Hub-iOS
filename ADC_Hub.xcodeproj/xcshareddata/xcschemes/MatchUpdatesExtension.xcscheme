@@ -5,7 +5,8 @@
    version = "2.0">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES">
+      buildImplicitDependencies = "YES"
+      buildArchitectures = "Automatic">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -15,10 +16,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3D1E57EB29F18D0400DA6296"
-               BuildableName = "GetAdamScore.appex"
-               BlueprintName = "GetAdamScore"
-               ReferencedContainer = "container:ADC Hub.xcodeproj">
+               BlueprintIdentifier = "3D943E602AFBD247009EF365"
+               BuildableName = "MatchUpdatesExtension.appex"
+               BlueprintName = "MatchUpdatesExtension"
+               ReferencedContainer = "container:ADC_Hub.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -31,8 +32,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "3DB11E49299543D9001DDB02"
                BuildableName = "ADC Hub.app"
-               BlueprintName = "ADC Hub"
-               ReferencedContainer = "container:ADC Hub.xcodeproj">
+               BlueprintName = "ADC_Hub"
+               ReferencedContainer = "container:ADC_Hub.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -41,9 +42,8 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES">
-      <Testables>
-      </Testables>
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      shouldAutocreateTestPlan = "YES">
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -63,10 +63,27 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3DB11E49299543D9001DDB02"
             BuildableName = "ADC Hub.app"
-            BlueprintName = "ADC Hub"
-            ReferencedContainer = "container:ADC Hub.xcodeproj">
+            BlueprintName = "ADC_Hub"
+            ReferencedContainer = "container:ADC_Hub.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "_XCWidgetKind"
+            value = ""
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "_XCWidgetDefaultView"
+            value = "timeline"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "_XCWidgetFamily"
+            value = "systemMedium"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -82,8 +99,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3DB11E49299543D9001DDB02"
             BuildableName = "ADC Hub.app"
-            BlueprintName = "ADC Hub"
-            ReferencedContainer = "container:ADC Hub.xcodeproj">
+            BlueprintName = "ADC_Hub"
+            ReferencedContainer = "container:ADC_Hub.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -1,7 +1,15 @@
+//
+//  TeamworkScoreCalculator.swift
+//  ADC Hub
+//
+//  Created by Skyler Clagg on 9/26/24.
+//
+
 import SwiftUI
 
-struct ScoreCalculator: View {
+struct TeamworkScoreCalculator: View {
     @EnvironmentObject var navigation_bar_manager: NavigationBarManager
+    @EnvironmentObject var settings: UserSettings
 
     // State variables for input fields
     @State private var dropZoneTopCleared = 0
@@ -23,7 +31,6 @@ struct ScoreCalculator: View {
         let blueBasePoints = blueBalls
 
         // Color match calculation for green and blue (only if there are bean bags in the drop zone)
-        // Multiply the number of bean bags by the balls, but still include the base points
         let greenColorMatch = greenBeanBags > 0 ? (greenBalls * greenBeanBags * 2) : 0
         let blueColorMatch = blueBeanBags > 0 ? (blueBalls * blueBeanBags * 2) : 0
 
@@ -55,23 +62,41 @@ struct ScoreCalculator: View {
         }
     }
 
-    // Remaining beanbags allowed (maximum 7 between green and blue)
+    // Remaining bean bags allowed (maximum 7 between green and blue)
     var remainingBeanBags: Int {
-        return max(7 - greenBeanBags - blueBeanBags, 0)
+        return max(0, 7 - (greenBeanBags + blueBeanBags))
     }
 
     // Remaining balls allowed (maximum 10 between neutral, green, and blue)
-    var totalBallsUsed: Int {
-        return neutralBalls + greenBalls + blueBalls
+    var remainingBalls: Int {
+        return max(0, 10 - (neutralBalls + greenBalls + blueBalls))
     }
 
-    var remainingBalls: Int {
-        return max(10 - totalBallsUsed, 0)
+    // Max counts for bean bags (do not limit based on tops cleared)
+    var maxGreenBeanBags: Int {
+        return greenBeanBags + remainingBeanBags
+    }
+
+    var maxBlueBeanBags: Int {
+        return blueBeanBags + remainingBeanBags
+    }
+
+    // Max counts for balls
+    var maxGreenBalls: Int {
+        return greenBalls + remainingBalls
+    }
+
+    var maxBlueBalls: Int {
+        return blueBalls + remainingBalls
+    }
+
+    var maxNeutralBalls: Int {
+        return neutralBalls + remainingBalls
     }
 
     // Constraint check for bean bags and drone zone tops cleared
     var isBeanBagConstraintViolated: Bool {
-        return dropZoneTopCleared < (greenBeanBags + blueBeanBags)
+        return (greenBeanBags + blueBeanBags) > dropZoneTopCleared
     }
 
     var body: some View {
@@ -91,18 +116,20 @@ struct ScoreCalculator: View {
                         showWarning: isBeanBagConstraintViolated
                     )
 
-                    // Green Bags on Drop Zone
+                    // Green Bean Bags on Drop Zone
                     CounterSection(
-                        title: "Green Bags on Drop Zone",
+                        title: "Green Bean Bags on Drop Zone",
                         count: $greenBeanBags,
-                        maxCount: 7 - blueBeanBags
+                        maxCount: maxGreenBeanBags,
+                        showWarning: isBeanBagConstraintViolated
                     )
 
-                    // Blue Bags on Drop Zone
+                    // Blue Bean Bags on Drop Zone
                     CounterSection(
-                        title: "Blue Bags on Drop Zone",
+                        title: "Blue Bean Bags on Drop Zone",
                         count: $blueBeanBags,
-                        maxCount: 7 - greenBeanBags
+                        maxCount: maxBlueBeanBags,
+                        showWarning: isBeanBagConstraintViolated
                     )
 
                     // Remaining Bean Bags Indicator
@@ -114,21 +141,21 @@ struct ScoreCalculator: View {
                     CounterSection(
                         title: "Green Balls in Zones",
                         count: $greenBalls,
-                        maxCount: greenBalls + remainingBalls
+                        maxCount: maxGreenBalls
                     )
 
                     // Neutral Balls in Zones
                     CounterSection(
                         title: "Neutral Balls in Zones",
                         count: $neutralBalls,
-                        maxCount: neutralBalls + remainingBalls
+                        maxCount: maxNeutralBalls
                     )
-                    
+
                     // Blue Balls in Zones
                     CounterSection(
                         title: "Blue Balls in Zones",
                         count: $blueBalls,
-                        maxCount: blueBalls + remainingBalls
+                        maxCount: maxBlueBalls
                     )
 
                     // Remaining Balls Indicator
@@ -152,10 +179,32 @@ struct ScoreCalculator: View {
                 }
                 .padding()
             }
-            .onAppear {
-                navigation_bar_manager.title = "Score Calculator"
+        }
+        .navigationTitle("Teamwork Score Calculator") // Add this line
+        .onAppear {
+            navigation_bar_manager.title = "Teamwork Score Calculator"
+        }
+        .toolbar {
+            // Clear Scores Button
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: clearInputs) {
+                    Image(systemName: "trash")
+                }
+                .accessibilityLabel("Clear Scores")
             }
         }
+    }
+
+    // Function to reset all inputs
+    func clearInputs() {
+        dropZoneTopCleared = 0
+        greenBeanBags = 0
+        blueBeanBags = 0
+        neutralBalls = 0
+        greenBalls = 0
+        blueBalls = 0
+        redDroneSelection = "None"
+        blueDroneSelection = "None"
     }
 }
 
@@ -338,7 +387,7 @@ struct DroneBox: View {
         return false
     }
 
-    // Helper function to get UIColor from droneColor
+    // Helper function to get Color from droneColor
     func droneUIColor() -> Color {
         return droneColor == "Red" ? .red : .blue
     }
@@ -370,9 +419,12 @@ struct DroneOptionButton: View {
     }
 }
 
-struct ScoreCalculator_Previews: PreviewProvider {
+struct TeamworkScoreCalculator_Previews: PreviewProvider {
     static var previews: some View {
-        ScoreCalculator()
-            .environmentObject(NavigationBarManager(title: "Score Calculator"))
+        NavigationView {
+            TeamworkScoreCalculator()
+                .environmentObject(NavigationBarManager(title: "Teamwork Score Calculator"))
+                .environmentObject(UserSettings())
+        }
     }
 }

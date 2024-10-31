@@ -16,8 +16,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "3DB11E49299543D9001DDB02"
                BuildableName = "ADC Hub.app"
-               BlueprintName = "ADC Hub"
-               ReferencedContainer = "container:ADC Hub.xcodeproj">
+               BlueprintName = "ADC_Hub"
+               ReferencedContainer = "container:ADC_Hub.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "3DB11E5A299543DC001DDB02"
-               BuildableName = "ADC HubTests.xctest"
-               BlueprintName = "ADC HubTests"
-               ReferencedContainer = "container:ADC Hub.xcodeproj">
+               BuildableName = "ADC_HubTests.xctest"
+               BlueprintName = "ADC_HubTests"
+               ReferencedContainer = "container:ADC_Hub.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -56,8 +56,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3DB11E49299543D9001DDB02"
             BuildableName = "ADC Hub.app"
-            BlueprintName = "ADC Hub"
-            ReferencedContainer = "container:ADC Hub.xcodeproj">
+            BlueprintName = "ADC_Hub"
+            ReferencedContainer = "container:ADC_Hub.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -86,8 +86,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3DB11E49299543D9001DDB02"
             BuildableName = "ADC Hub.app"
-            BlueprintName = "ADC Hub"
-            ReferencedContainer = "container:ADC Hub.xcodeproj">
+            BlueprintName = "ADC_Hub"
+            ReferencedContainer = "container:ADC_Hub.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
