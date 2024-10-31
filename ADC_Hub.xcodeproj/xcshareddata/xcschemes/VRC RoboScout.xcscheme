@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "3DB11E49299543D9001DDB02"
-               BuildableName = "ADC Hub.app"
+               BuildableName = "ADC_Hub.app"
                BlueprintName = "ADC_Hub"
                ReferencedContainer = "container:ADC_Hub.xcodeproj">
             </BuildableReference>
@@ -55,7 +55,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3DB11E49299543D9001DDB02"
-            BuildableName = "ADC Hub.app"
+            BuildableName = "ADC_Hub.app"
             BlueprintName = "ADC_Hub"
             ReferencedContainer = "container:ADC_Hub.xcodeproj">
          </BuildableReference>
@@ -85,7 +85,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3DB11E49299543D9001DDB02"
-            BuildableName = "ADC Hub.app"
+            BuildableName = "ADC_Hub.app"
             BlueprintName = "ADC_Hub"
             ReferencedContainer = "container:ADC_Hub.xcodeproj">
          </BuildableReference>

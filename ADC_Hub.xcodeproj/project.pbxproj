@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		3D0583BB2AFC4CF70047A393 /* Matft in Frameworks */ = {isa = PBXBuildFile; productRef = 3D0583BA2AFC4CF70047A393 /* Matft */; };
-		3D4C0C302B0BCC1E0071D664 /* MatrixInversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D4C0C2F2B0BCC1D0071D664 /* MatrixInversionTests.swift */; };
 		3D50E10829C8915C002FE201 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3D50E10729C8915C002FE201 /* Launch Screen.storyboard */; };
 		3D86DDB12A3A3ACC00826BB4 /* Matft in Frameworks */ = {isa = PBXBuildFile; productRef = 3D86DDB02A3A3ACC00826BB4 /* Matft */; };
 		3D943E622AFBD247009EF365 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D943E152AFBC823009EF365 /* WidgetKit.framework */; };
@@ -18,9 +17,6 @@
 		3D943E6E2AFBD24B009EF365 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D943E6D2AFBD24B009EF365 /* Assets.xcassets */; };
 		3DAFC80E2A2640EB00A0C41A /* CoreML in Resources */ = {isa = PBXBuildFile; fileRef = 3DAFC80D2A2640EB00A0C41A /* CoreML */; };
 		3DB11E52299543DC001DDB02 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DB11E51299543DC001DDB02 /* Assets.xcassets */; };
-		3DB11E60299543DC001DDB02 /* VRCRoboScoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DB11E5F299543DC001DDB02 /* VRCRoboScoutTests.swift */; };
-		3DB11E6A299543DC001DDB02 /* VRCRoboScoutUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DB11E69299543DC001DDB02 /* VRCRoboScoutUITests.swift */; };
-		3DB11E6C299543DC001DDB02 /* VRCRoboScoutUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DB11E6B299543DC001DDB02 /* VRCRoboScoutUITestsLaunchTests.swift */; };
 		3DE63FAF2C59A59C0049939C /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3D22AAA92BD9C16B001AD59E /* Config.plist */; };
 		D4C6BFC62CD26FE90034C350 /* PilotingSkillsCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C6BFC52CD26FE90034C350 /* PilotingSkillsCalculator.swift */; };
 		D4C6BFC82CD270B70034C350 /* ScoreCalculatorsHome.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C6BFC72CD270B70034C350 /* ScoreCalculatorsHome.swift */; };
@@ -32,7 +28,6 @@
 		D4F0846C2CA47C230032E72D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D5FA4942AFEAA4F00149E88 /* AppDelegate.swift */; };
 		D4F0846D2CA47C230032E72D /* ADCHubApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DB11E4D299543D9001DDB02 /* ADCHubApp.swift */; };
 		D4F0846E2CA47C230032E72D /* Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DE63FA12C5808BA0049939C /* Shared.swift */; };
-		D4F0846F2CA47C230032E72D /* WatchSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9826E52C53F02800C2963B /* WatchSession.swift */; };
 		D4F084702CA47C230032E72D /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DFB59C32C536BCC0061CE6C /* UserSettings.swift */; };
 		D4F084712CA47C230032E72D /* MatchRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D9826E82C5553CD00C2963B /* MatchRowView.swift */; };
 		D4F084722CA47C230032E72D /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DB21DD42B054D6400B12803 /* RootView.swift */; };
@@ -54,8 +49,8 @@
 		D4F084882CA47C360032E72D /* ADCHubData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 3D1E7F4D2AAA2B4F009BA258 /* ADCHubData.xcdatamodeld */; };
 		D4F0848D2CA47C960032E72D /* MatchUpdatesLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D943E672AFBD248009EF365 /* MatchUpdatesLiveActivity.swift */; };
 		D4F084A72CA47DDE0032E72D /* ADCHubAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F084A62CA47DDE0032E72D /* ADCHubAPI.swift */; };
-		D4F084A92CA47DEE0032E72D /* Settings_ADC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F084A82CA47DEE0032E72D /* Settings_ADC.swift */; };
-		D4F084AB2CA47E9E0032E72D /* WorldSkillsRankings_ADC .swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F084AA2CA47E9E0032E72D /* WorldSkillsRankings_ADC .swift */; };
+		D4F084A92CA47DEE0032E72D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F084A82CA47DEE0032E72D /* Settings.swift */; };
+		D4F084AB2CA47E9E0032E72D /* WorldSkillsRankings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F084AA2CA47E9E0032E72D /* WorldSkillsRankings.swift */; };
 		D4F332FF2CA78AE300C7EE4F /* DataExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F332FE2CA78AE300C7EE4F /* DataExporter.swift */; };
 /* End PBXBuildFile section */
 
@@ -113,7 +108,6 @@
 		3D3219CC29D1EF1D00EF5500 /* EventInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventInformation.swift; sourceTree = "<group>"; };
 		3D3219CE29D31BD500EF5500 /* EventTeams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventTeams.swift; sourceTree = "<group>"; };
 		3D3219D029D3327500EF5500 /* EventTeamMatches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventTeamMatches.swift; sourceTree = "<group>"; };
-		3D4C0C2F2B0BCC1D0071D664 /* MatrixInversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixInversionTests.swift; sourceTree = "<group>"; };
 		3D50E10729C8915C002FE201 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		3D56DC502B28B25D004DA5B9 /* TeamInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamInfoView.swift; sourceTree = "<group>"; };
 		3D5FA4942AFEAA4F00149E88 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -129,7 +123,6 @@
 		3D943E6D2AFBD24B009EF365 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3D943E6F2AFBD24B009EF365 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3D943E7B2AFBFA22009EF365 /* ADCHubActivityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ADCHubActivityController.swift; sourceTree = "<group>"; };
-		3D9826E52C53F02800C2963B /* WatchSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSession.swift; sourceTree = "<group>"; };
 		3D9826E82C5553CD00C2963B /* MatchRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchRowView.swift; sourceTree = "<group>"; };
 		3DAFC80D2A2640EB00A0C41A /* CoreML */ = {isa = PBXFileReference; lastKnownFileType = folder; path = CoreML; sourceTree = "<group>"; };
 		3DB11E4A299543D9001DDB02 /* ADC_Hub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ADC_Hub.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -138,10 +131,7 @@
 		3DB11E51299543DC001DDB02 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3DB11E53299543DC001DDB02 /* ADC Hub.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ADC Hub.entitlements"; sourceTree = "<group>"; };
 		3DB11E5B299543DC001DDB02 /* ADC_HubTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ADC_HubTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		3DB11E5F299543DC001DDB02 /* VRCRoboScoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VRCRoboScoutTests.swift; sourceTree = "<group>"; };
 		3DB11E65299543DC001DDB02 /* ADC_HubUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ADC_HubUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		3DB11E69299543DC001DDB02 /* VRCRoboScoutUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VRCRoboScoutUITests.swift; sourceTree = "<group>"; };
-		3DB11E6B299543DC001DDB02 /* VRCRoboScoutUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VRCRoboScoutUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		3DB21DD42B054D6400B12803 /* RootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		3DE63FA12C5808BA0049939C /* Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared.swift; sourceTree = "<group>"; };
 		3DFB59C32C536BCC0061CE6C /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
@@ -151,8 +141,8 @@
 		D4E7F1CF2CA4B555005886B7 /* GameManual.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameManual.swift; sourceTree = "<group>"; };
 		D4E7F1D12CA4C267005886B7 /* TeamworkScoreCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamworkScoreCalculator.swift; sourceTree = "<group>"; };
 		D4F084A62CA47DDE0032E72D /* ADCHubAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ADCHubAPI.swift; sourceTree = "<group>"; };
-		D4F084A82CA47DEE0032E72D /* Settings_ADC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings_ADC.swift; sourceTree = "<group>"; };
-		D4F084AA2CA47E9E0032E72D /* WorldSkillsRankings_ADC .swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldSkillsRankings_ADC .swift"; sourceTree = "<group>"; };
+		D4F084A82CA47DEE0032E72D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		D4F084AA2CA47E9E0032E72D /* WorldSkillsRankings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldSkillsRankings.swift; sourceTree = "<group>"; };
 		D4F332FE2CA78AE300C7EE4F /* DataExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExporter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -227,8 +217,6 @@
 				3DAFC80D2A2640EB00A0C41A /* CoreML */,
 				3DB11E4C299543D9001DDB02 /* ADC Hub */,
 				3D943E642AFBD248009EF365 /* MatchUpdates */,
-				3DB11E5E299543DC001DDB02 /* ADC HubTests */,
-				3DB11E68299543DC001DDB02 /* ADC HubUITests */,
 				3D1E57ED29F18D0400DA6296 /* Frameworks */,
 				3DB11E4B299543D9001DDB02 /* Products */,
 			);
@@ -256,8 +244,8 @@
 				3D50E10729C8915C002FE201 /* Launch Screen.storyboard */,
 				3DB11E51299543DC001DDB02 /* Assets.xcassets */,
 				3D22AAA92BD9C16B001AD59E /* Config.plist */,
-				D4F084A82CA47DEE0032E72D /* Settings_ADC.swift */,
-				D4F084AA2CA47E9E0032E72D /* WorldSkillsRankings_ADC .swift */,
+				D4F084A82CA47DEE0032E72D /* Settings.swift */,
+				D4F084AA2CA47E9E0032E72D /* WorldSkillsRankings.swift */,
 				D4F084A62CA47DDE0032E72D /* ADCHubAPI.swift */,
 				D4F332FE2CA78AE300C7EE4F /* DataExporter.swift */,
 				3D73E3AB2AB330CD005BE836 /* ADCHubDataController.swift */,
@@ -265,7 +253,6 @@
 				3D5FA4942AFEAA4F00149E88 /* AppDelegate.swift */,
 				3DB11E4D299543D9001DDB02 /* ADCHubApp.swift */,
 				3DE63FA12C5808BA0049939C /* Shared.swift */,
-				3D9826E52C53F02800C2963B /* WatchSession.swift */,
 				3DFB59C32C536BCC0061CE6C /* UserSettings.swift */,
 				3D9826E82C5553CD00C2963B /* MatchRowView.swift */,
 				3DB21DD42B054D6400B12803 /* RootView.swift */,
@@ -288,24 +275,6 @@
 				3D0BE6F829A3F0C700C3EA8A /* Lookup.swift */,
 			);
 			path = "ADC Hub";
-			sourceTree = "<group>";
-		};
-		3DB11E5E299543DC001DDB02 /* ADC HubTests */ = {
-			isa = PBXGroup;
-			children = (
-				3DB11E5F299543DC001DDB02 /* VRCRoboScoutTests.swift */,
-				3D4C0C2F2B0BCC1D0071D664 /* MatrixInversionTests.swift */,
-			);
-			path = "ADC HubTests";
-			sourceTree = "<group>";
-		};
-		3DB11E68299543DC001DDB02 /* ADC HubUITests */ = {
-			isa = PBXGroup;
-			children = (
-				3DB11E69299543DC001DDB02 /* VRCRoboScoutUITests.swift */,
-				3DB11E6B299543DC001DDB02 /* VRCRoboScoutUITestsLaunchTests.swift */,
-			);
-			path = "ADC HubUITests";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -490,8 +459,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D4C0C302B0BCC1E0071D664 /* MatrixInversionTests.swift in Sources */,
-				3DB11E60299543DC001DDB02 /* VRCRoboScoutTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -499,8 +466,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3DB11E6A299543DC001DDB02 /* VRCRoboScoutUITests.swift in Sources */,
-				3DB11E6C299543DC001DDB02 /* VRCRoboScoutUITestsLaunchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -510,8 +475,8 @@
 			files = (
 				D4F332FF2CA78AE300C7EE4F /* DataExporter.swift in Sources */,
 				D4C6BFC82CD270B70034C350 /* ScoreCalculatorsHome.swift in Sources */,
-				D4F084AB2CA47E9E0032E72D /* WorldSkillsRankings_ADC .swift in Sources */,
-				D4F084A92CA47DEE0032E72D /* Settings_ADC.swift in Sources */,
+				D4F084AB2CA47E9E0032E72D /* WorldSkillsRankings.swift in Sources */,
+				D4F084A92CA47DEE0032E72D /* Settings.swift in Sources */,
 				D4F084A72CA47DDE0032E72D /* ADCHubAPI.swift in Sources */,
 				D4F0848D2CA47C960032E72D /* MatchUpdatesLiveActivity.swift in Sources */,
 				D4F084882CA47C360032E72D /* ADCHubData.xcdatamodeld in Sources */,
@@ -521,7 +486,6 @@
 				D4F0846D2CA47C230032E72D /* ADCHubApp.swift in Sources */,
 				D4E7F1D22CA4C267005886B7 /* TeamworkScoreCalculator.swift in Sources */,
 				D4F0846E2CA47C230032E72D /* Shared.swift in Sources */,
-				D4F0846F2CA47C230032E72D /* WatchSession.swift in Sources */,
 				D4F084702CA47C230032E72D /* UserSettings.swift in Sources */,
 				D4F084712CA47C230032E72D /* MatchRowView.swift in Sources */,
 				D4F084722CA47C230032E72D /* RootView.swift in Sources */,
@@ -768,7 +732,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "VRC-RoboScout-Info.plist";
+				INFOPLIST_FILE = "ADC-Hub-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "ADC Hub";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
@@ -823,8 +787,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "VRC-RoboScout-Info.plist";
-				"INFOPLIST_FILE[sdk=*]" = "VRC-RoboScout-Info.plist";
+				INFOPLIST_FILE = "ADC-Hub-Info.plist";
+				"INFOPLIST_FILE[sdk=*]" = "ADC-Hub-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "ADC Hub";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
