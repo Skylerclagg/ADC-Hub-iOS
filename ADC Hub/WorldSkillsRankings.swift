@@ -81,13 +81,13 @@ struct WorldSkillsRow: View {
 class WorldSkillsTeams: ObservableObject {
     @Published var world_skills_teams: [WorldSkillsTeam] = []
 
-    // Properties to hold filters and grade level
+
     private var region: Int = 0
     private var letter: Character = "0"
     private var filter_array: [String] = []
     private var gradeLevel: String = "High School" // Default to High School
 
-    // Method to load data
+
     func loadWorldSkillsData(region: Int = 0, letter: Character = "0", filter_array: [String] = [], gradeLevel: String) {
         self.region = region
         self.letter = letter
@@ -102,14 +102,11 @@ class WorldSkillsTeams: ObservableObject {
             case "High School":
                 skillsCache = API.high_school_world_skills_cache
             default:
-                skillsCache = API.high_school_world_skills_cache  // Default to high school
+                skillsCache = API.high_school_world_skills_cache
             }
-
-            // No need to populate caches here; they are already updated in loadData()
 
             var teamsToProcess = skillsCache.teams
 
-            // Apply filters
             if !self.filter_array.isEmpty {
                 teamsToProcess = teamsToProcess.filter { self.filter_array.contains($0.team.number) }
             }
@@ -120,7 +117,6 @@ class WorldSkillsTeams: ObservableObject {
                 teamsToProcess = teamsToProcess.filter { $0.team.number.last == self.letter }
             }
 
-            // Map teams to WorldSkillsTeam
             var worldSkillsTeams = [WorldSkillsTeam]()
             var rank = 1
             for team in teamsToProcess {
@@ -235,7 +231,6 @@ struct WorldSkillsRankings: View {
         world_skills_rankings.world_skills_teams = []
 
         API.populate_all_world_skills_caches {
-            // This closure is called after data is loaded
             self.world_skills_rankings.loadWorldSkillsData(region: self.region_id, letter: self.letter, filter_array: [], gradeLevel: self.grade_level)
         }
     }

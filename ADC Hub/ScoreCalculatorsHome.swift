@@ -2,7 +2,7 @@
 //  ScoreCalculatorsHome.swift
 //  ADC Hub
 //
-//  Created by Skyler Clagg on 9/26/24.
+//  Created by Skyler Clagg on 10/30/24.
 //
 
 import SwiftUI
@@ -15,11 +15,6 @@ struct ScoreCalculatorsHome: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            // Optional: Include the title as a Text view if desired
-            // Text("Score Calculators")
-            //     .font(.largeTitle)
-            //     .padding()
-
             NavigationLink(destination: TeamworkScoreCalculator()
                 .environmentObject(favorites)
                 .environmentObject(settings)

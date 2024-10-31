@@ -2,7 +2,7 @@
 //  PilotingSkillsCalculator.swift
 //  ADC Hub
 //
-//  Created by Skyler Clagg on 9/26/24.
+//  Created by Skyler Clagg on 10/30/24.
 //
 
 import SwiftUI
@@ -68,14 +68,12 @@ struct PilotingSkillsCalculator: View {
 
     var body: some View {
         Form {
-            // Display total score at the top
             Section(header: Text("Total Score")) {
                 Text("\(totalScore)")
                     .font(.largeTitle)
                     .fontWeight(.bold)
             }
 
-            // Take Off Section
             Section(header: Text("Tasks:")) {
                 Toggle("Take Off: ", isOn: $didTakeOff)
                     .toggleStyle(SwitchToggleStyle(tint: settings.buttonColor()))
@@ -114,7 +112,6 @@ struct PilotingSkillsCalculator: View {
                 }
             }
 
-            // Landing Options Section
             Section(header: Text("Landing Options")) {
                 Picker("Select Landing Option", selection: $selectedLandingOption) {
                     ForEach(LandingOption.allCases) { option in
