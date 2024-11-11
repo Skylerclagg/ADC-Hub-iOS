@@ -43,7 +43,7 @@ struct EventDivisionMatches: View {
                     var name = match.name
                     name.replace("Qualifier", with: "Q")
                     name.replace("Practice", with: "P")
-                    name.replace("Final", with: "F")
+                    name.replace("Match", with: "E")
                     name.replace("#", with: "")
                     
                     // Determine the match time

@@ -74,81 +74,102 @@ struct MatchRowView: View {
         
         if match.completed() {
             HStack {
-                Text(String(describing: match.red_score))
-                    .foregroundColor(.red)
-                    .font(.system(size: 18))
-                    .frame(alignment: .leading)
-                    .underline(conditionalUnderline(matchString: matchString, index: 6))
-                    .bold()
-                Spacer()
-                Text(String(describing: match.blue_score))
-                    .foregroundColor(.blue)
-                    .font(.system(size: 18))
-                    .frame(alignment: .trailing)
-                    .underline(conditionalUnderline(matchString: matchString, index: 7))
-                    .bold()
+                if (match.red_score != match.blue_score){
+                    Text(String(describing: match.red_score))
+                        .foregroundColor(.red)
+                        .font(.system(size: 18))
+                        .frame(alignment: .leading)
+                        .underline(conditionalUnderline(matchString: matchString, index: 6))
+                        .bold()
+                    Spacer()
+                    Text(String(describing: match.blue_score))
+                        .foregroundColor(.blue)
+                        .font(.system(size: 18))
+                        .frame(alignment: .trailing)
+                        .underline(conditionalUnderline(matchString: matchString, index: 7))
+                        .bold()
+                }else{
+                    Text(String(describing: match.red_score))
+                        .foregroundColor(.green)
+                        .font(.system(size: 18))
+                        .frame(alignment: .center)
+                        .underline(conditionalUnderline(matchString: matchString, index: 6))
+                        .bold()
+                }
             }
-        } else {
+        }else {
             Spacer()
             Text(match.field)
-                .font(.system(size: 15))
+                .font(.system(size: 11))
                 .foregroundColor(.secondary)
             Spacer()
         }
     }
     
     var body: some View {
-        NavigationLink(destination: MatchNotes(event: event, match: matches[Int($matchString.wrappedValue.split(separator: "&&")[0])!])
-                        .environmentObject(settings)
-                        .environmentObject(dataController)) {
+        NavigationLink(
+            destination: MatchNotes(event: event, match: matches[Int($matchString.wrappedValue.split(separator: "&&")[0])!])
+                .environmentObject(settings)
+                .environmentObject(dataController)
+        ) {
             HStack {
-                VStack {
+                VStack(alignment: .leading) {
                     Text($matchString.wrappedValue.split(separator: "&&")[1])
                         .font(.system(size: 15))
-                        .frame(width: 60, alignment: .leading)
                         .foregroundColor(conditionalColor(matchString: $matchString.wrappedValue))
                         .bold()
-                    Spacer().frame(maxHeight: 4)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                    Spacer().frame(height: 4)
                     Text($matchString.wrappedValue.split(separator: "&&")[8])
                         .font(.system(size: 12))
-                        .frame(width: 60, alignment: .leading)
-                }.frame(width: 40)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+                .frame(width: 60, alignment: .leading)
+
                 VStack {
-                    if String(teams_map[String($matchString.wrappedValue.split(separator: "&&")[3])] ?? "") != "" {
-                        Text(String(teams_map[String($matchString.wrappedValue.split(separator: "&&")[2])] ?? ""))
+                    if let team3 = teams_map[String($matchString.wrappedValue.split(separator: "&&")[3])], !team3.isEmpty {
+                        Text(teams_map[String($matchString.wrappedValue.split(separator: "&&")[2])] ?? "")
                             .foregroundColor(.red)
                             .font(.system(size: 15))
                             .underline(conditionalUnderline(matchString: $matchString.wrappedValue, index: 2))
-                        Text(String(teams_map[String($matchString.wrappedValue.split(separator: "&&")[3])] ?? ""))
+                        Text(team3)
                             .foregroundColor(.red)
                             .font(.system(size: 15))
                             .underline(conditionalUnderline(matchString: $matchString.wrappedValue, index: 3))
                     } else {
-                        Text(String(teams_map[String($matchString.wrappedValue.split(separator: "&&")[2])] ?? ""))
+                        Text(teams_map[String($matchString.wrappedValue.split(separator: "&&")[2])] ?? "")
                             .foregroundColor(.red)
                             .font(.system(size: 15))
                             .underline(conditionalUnderline(matchString: $matchString.wrappedValue, index: 2))
                     }
-                }.frame(width: 70)
+                }
+                .frame(width: 70)
+
                 centerDisplay(matchString: $matchString.wrappedValue)
-                VStack {
-                    if String(teams_map[String($matchString.wrappedValue.split(separator: "&&")[5])] ?? "") != "" {
-                        Text(String(teams_map[String($matchString.wrappedValue.split(separator: "&&")[4])] ?? ""))
+                    .frame(maxWidth: .infinity)
+
+                VStack(alignment: .trailing) {
+                    if let team5 = teams_map[String($matchString.wrappedValue.split(separator: "&&")[5])], !team5.isEmpty {
+                        Text(teams_map[String($matchString.wrappedValue.split(separator: "&&")[4])] ?? "")
                             .foregroundColor(.blue)
                             .font(.system(size: 15))
                             .underline(conditionalUnderline(matchString: $matchString.wrappedValue, index: 4))
-                        Text(String(teams_map[String($matchString.wrappedValue.split(separator: "&&")[5])] ?? ""))
+                        Text(team5)
                             .foregroundColor(.blue)
                             .font(.system(size: 15))
                             .underline(conditionalUnderline(matchString: $matchString.wrappedValue, index: 5))
                     } else {
-                        Text(String(teams_map[String($matchString.wrappedValue.split(separator: "&&")[4])] ?? ""))
+                        Text(teams_map[String($matchString.wrappedValue.split(separator: "&&")[4])] ?? "")
                             .foregroundColor(.blue)
                             .font(.system(size: 15))
                             .underline(conditionalUnderline(matchString: $matchString.wrappedValue, index: 4))
                     }
-                }.frame(width: 70)
-            }.frame(maxHeight: 30)
+                }
+                .frame(width: 70, alignment: .trailing)
+            }
+            .frame(maxWidth: .infinity, maxHeight: 30)
         }
     }
 }

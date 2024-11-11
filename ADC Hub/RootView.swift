@@ -98,7 +98,7 @@ struct RootView: View {
                         if UserSettings.getMinimalistic(){
                             Image(systemName: "ipad")
                         }else{
-                            Label("Calculators", systemImage: "ipad")
+                            Label("Calculators", systemImage: "candybarphone")
                         }
                     }
                     .environmentObject(favorites)

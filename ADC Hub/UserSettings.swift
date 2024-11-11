@@ -39,7 +39,7 @@ func getGreen() -> UIColor {
     #if os(iOS)
     return .systemGreen
     #else
-    return .red
+    return .green
     #endif
 }
 

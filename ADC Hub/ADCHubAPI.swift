@@ -438,17 +438,18 @@ public class ADCHubAPI {
         fetch_world_skills(forGrade: "High School", season: self.selected_season_id()) { highSchoolTeams in
             self.high_school_world_skills_cache = WorldSkillsCache(responses: highSchoolTeams)
             print("High School Cache populated with \(self.high_school_world_skills_cache.teams.count) teams.")
+            completion()
             dispatchGroup.leave()
+        
         }
-
-        // After fetching both Middle School and High School data, ensure the combined cache is populated
+       /* For later feature to show a combined skills ranking 
         dispatchGroup.notify(queue: .main) {
             let combinedTeams = self.middle_school_world_skills_cache.teams + self.high_school_world_skills_cache.teams
             self.combined_world_skills_cache.teams = combinedTeams
             print("Combined Cache: \(self.combined_world_skills_cache.teams.count) teams")
-            // Call the completion handler here
+        
             completion()
-        }
+        }*/
     }
 
 
