@@ -10,22 +10,17 @@ import SwiftUI
 struct AutonomousFlightSkillsCalculator: View {
     @EnvironmentObject var navigation_bar_manager: NavigationBarManager
     @EnvironmentObject var settings: UserSettings
+    @Environment(\.colorScheme) var colorScheme // Detect light or dark mode
 
     // State variables for tasks
-    // Take off and Identify Color (per color mat)
     @State private var takeOffCount: Int = 0 // Max 2
     @State private var identifyColorCount: Int = 0 // Max 2
-
-    // Tasks allowed twice
     @State private var figure8Count: Int = 0 // Max 2
     @State private var smallHoleCount: Int = 0 // Max 2
     @State private var largeHoleCount: Int = 0 // Max 2
-
-    // Tasks allowed twice per object (2 objects)
     @State private var archGateCount: Int = 0 // Max 4 (2 per arch gate)
     @State private var keyholeCount: Int = 0 // Max 4 (2 per keyhole)
 
-    // Landing options enumeration
     enum LandingOption: String, CaseIterable, Identifiable {
         case none = "None"
         case landOnPad = "Landing Pad"
@@ -40,125 +35,125 @@ struct AutonomousFlightSkillsCalculator: View {
     // Total score computed property
     var totalScore: Int {
         var score = 0
-
-        // Take Off: 10 Points, Once per Color Mat (2 mats)
         score += takeOffCount * 10
-
-        // Identify Color: 15 Points, Once per Color Mat (2 mats)
         score += identifyColorCount * 15
-
-        // Complete a Figure 8: 40 Points, Max 2
         score += figure8Count * 40
-
-        // Fly Under Arch Gate: 5 Points, 2 per Arch Gate (4 total)
         score += archGateCount * 5
-
-        // Fly Through Keyhole: 15 Points, 2 per Keyhole (4 total)
         score += keyholeCount * 15
-
-        // Fly Through Small Hole: 40 Points, Max 2
         score += smallHoleCount * 40
-
-        // Fly Through Large Hole: 20 Points, Max 2
         score += largeHoleCount * 20
 
-        // Landing Options
         switch selectedLandingOption {
-        case .none:
-            break // No points
-        case .landOnPad:
-            score += 15
-        case .landingCubeSmall:
-            score += 40
-        case .landingCubeLarge:
-            score += 25
+        case .none: break
+        case .landOnPad: score += 15
+        case .landingCubeSmall: score += 40
+        case .landingCubeLarge: score += 25
         }
 
         return score
     }
 
+    var textColor: Color {
+        colorScheme == .dark ? .white : .black
+    }
+
     var body: some View {
         Form {
             // Display total score at the top
-            Section(header: Text("Total Score")) {
+            Section(header: Text("Total Score").foregroundStyle(textColor)) {
                 Text("\(totalScore)")
                     .font(.largeTitle)
                     .fontWeight(.bold)
+                    .foregroundStyle(LinearGradient(
+                        colors: [.blue, .green],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )) // Gradient color for total score to make it pop
             }
 
             // Per Color Mat Tasks Section
-            Section(header: Text("Tasks:")) {
+            Section(header: Text("Tasks:").foregroundStyle(textColor)) {
                 Stepper(value: $takeOffCount, in: 0...2) {
                     HStack {
-                        Text("Take Off: ")
+                        Text("Take Off:")
+                            .foregroundStyle(.green)
                         Spacer()
                         Text("\(takeOffCount)")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(textColor)
                     }
                 }
                 Stepper(value: $identifyColorCount, in: 0...2) {
                     HStack {
-                        Text("Identify Color Count")
+                        Text("Identify Color Count:")
+                            .foregroundStyle(.green)
                         Spacer()
                         Text("\(identifyColorCount)")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(textColor)
                     }
                 }
                 Stepper(value: $figure8Count, in: 0...2) {
                     HStack {
-                        Text("Complete a Figure 8")
+                        Text("Complete a Figure 8:")
+                            .foregroundStyle(.green)
                         Spacer()
                         Text("\(figure8Count)")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(textColor)
                     }
                 }
                 Stepper(value: $smallHoleCount, in: 0...2) {
                     HStack {
-                        Text("Fly Through Small Hole")
+                        Text("Fly Through Small Hole:")
+                            .foregroundStyle(.green)
                         Spacer()
                         Text("\(smallHoleCount)")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(textColor)
                     }
                 }
                 Stepper(value: $largeHoleCount, in: 0...2) {
                     HStack {
-                        Text("Fly Through Large Hole")
+                        Text("Fly Through Large Hole:")
+                            .foregroundStyle(.green)
                         Spacer()
                         Text("\(largeHoleCount)")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(textColor)
                     }
                 }
                 Stepper(value: $archGateCount, in: 0...4) {
                     HStack {
-                        Text("Fly Under Arch Gate")
+                        Text("Fly Under Arch Gate:")
+                            .foregroundStyle(.green)
                         Spacer()
                         Text("\(archGateCount)")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(textColor)
                     }
                 }
                 .help("Max 2 per Arch Gate (2 Arch Gates)")
 
                 Stepper(value: $keyholeCount, in: 0...4) {
                     HStack {
-                        Text("Fly Through Keyhole")
+                        Text("Fly Through Keyhole:")
+                            .foregroundStyle(.green)
                         Spacer()
                         Text("\(keyholeCount)")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(textColor)
                     }
                 }
                 .help("Max 2 per Keyhole (2 Keyholes)")
             }
 
             // Landing Options Section
-            Section(header: Text("Landing Options")) {
+            Section(header: Text("Landing Options:").foregroundStyle(textColor)) {
                 Picker("Select Landing Option", selection: $selectedLandingOption) {
                     ForEach(LandingOption.allCases) { option in
-                        Text(option.rawValue).tag(option)
+                        Text(option.rawValue)
+                            .tag(option)
+                            .foregroundStyle(.green) // Make all options green
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
             }
         }
+        .accentColor(.green) // Make all + and - buttons green
         .navigationTitle("Autonomous Flight Calculator")
         .toolbar {
             // Clear Scores Button
@@ -166,6 +161,7 @@ struct AutonomousFlightSkillsCalculator: View {
                 Button(action: clearInputs) {
                     Image(systemName: "trash")
                 }
+                .foregroundStyle(.red) // Make the trash button red to highlight it
                 .accessibilityLabel("Clear Scores")
             }
         }

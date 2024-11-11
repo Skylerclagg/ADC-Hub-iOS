@@ -10,6 +10,7 @@ import SwiftUI
 struct PilotingSkillsCalculator: View {
     @EnvironmentObject var navigation_bar_manager: NavigationBarManager
     @EnvironmentObject var settings: UserSettings
+    @Environment(\.colorScheme) var colorScheme // Detect light or dark mode
 
     // State variables for tasks
     @State private var didTakeOff: Bool = false
@@ -66,61 +67,80 @@ struct PilotingSkillsCalculator: View {
         return score
     }
 
+    // Detect the current color mode and choose text colors accordingly
+    var textColor: Color {
+        colorScheme == .dark ? .white : .black
+    }
+
     var body: some View {
         Form {
-            Section(header: Text("Total Score")) {
+            // Display total score at the top
+            Section(header: Text("Total Score").foregroundStyle(textColor)) {
                 Text("\(totalScore)")
                     .font(.largeTitle)
                     .fontWeight(.bold)
+                    .foregroundStyle(LinearGradient(
+                        colors: [.blue, .green],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )) // Gradient color for total score to make it pop
             }
 
-            Section(header: Text("Tasks:")) {
-                Toggle("Take Off: ", isOn: $didTakeOff)
+            // Tasks Section
+            Section(header: Text("Tasks:").foregroundStyle(textColor)) {
+                Toggle("Take Off: ", isOn: $didTakeOff).foregroundStyle(.green)
                     .toggleStyle(SwitchToggleStyle(tint: settings.buttonColor()))
                 
                 Stepper(value: $figure8Count, in: 0...100) {
                     HStack {
-                        Text("Complete a Figure 8")
+                        Text("Complete a Figure 8:")
+                            .foregroundStyle(.green)
                         Spacer()
                         Text("\(figure8Count)")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(textColor)
                     }
                 }
                 Stepper(value: $smallHoleCount, in: 0...100) {
                     HStack {
-                        Text("Fly Through Small Hole")
+                        Text("Fly Through Small Hole:")
+                            .foregroundStyle(.green)
                         Spacer()
                         Text("\(smallHoleCount)")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(textColor)
                     }
                 }
                 Stepper(value: $largeHoleCount, in: 0...100) {
                     HStack {
-                        Text("Fly Through Large Hole")
+                        Text("Fly Through Large Hole:")
+                            .foregroundStyle(.green)
                         Spacer()
                         Text("\(largeHoleCount)")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(textColor)
                     }
                 }
                 Stepper(value: $keyholeCount, in: 0...100) {
                     HStack {
-                        Text("Fly Through Keyhole")
+                        Text("Fly Through Keyhole:")
+                            .foregroundStyle(.green)
                         Spacer()
                         Text("\(keyholeCount)")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(textColor)
                     }
                 }
             }
 
-            Section(header: Text("Landing Options")) {
+            // Landing Options Section
+            Section(header: Text("Landing Options").foregroundStyle(textColor)) {
                 Picker("Select Landing Option", selection: $selectedLandingOption) {
                     ForEach(LandingOption.allCases) { option in
                         Text(option.rawValue).tag(option)
+                            .foregroundStyle(.green) // Make all options green
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
             }
         }
+        .accentColor(.green) // Make all + and - buttons green
         .navigationTitle("Piloting Skills Calculator")
         .toolbar {
             // Clear Scores Button
@@ -128,6 +148,7 @@ struct PilotingSkillsCalculator: View {
                 Button(action: clearInputs) {
                     Image(systemName: "trash")
                 }
+                .foregroundStyle(.red) // Make the trash button red to highlight it
                 .accessibilityLabel("Clear Scores")
             }
         }
