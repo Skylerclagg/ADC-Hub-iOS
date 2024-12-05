@@ -51,7 +51,6 @@
 		D4F084A72CA47DDE0032E72D /* ADCHubAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F084A62CA47DDE0032E72D /* ADCHubAPI.swift */; };
 		D4F084A92CA47DEE0032E72D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F084A82CA47DEE0032E72D /* Settings.swift */; };
 		D4F084AB2CA47E9E0032E72D /* WorldSkillsRankings.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F084AA2CA47E9E0032E72D /* WorldSkillsRankings.swift */; };
-		D4F332FF2CA78AE300C7EE4F /* DataExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F332FE2CA78AE300C7EE4F /* DataExporter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -473,7 +472,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D4F332FF2CA78AE300C7EE4F /* DataExporter.swift in Sources */,
 				D4C6BFC82CD270B70034C350 /* ScoreCalculatorsHome.swift in Sources */,
 				D4F084AB2CA47E9E0032E72D /* WorldSkillsRankings.swift in Sources */,
 				D4F084A92CA47DEE0032E72D /* Settings.swift in Sources */,
@@ -756,7 +754,7 @@
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.skyler.adchub;
 				PRODUCT_NAME = ADC_Hub;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -812,7 +810,7 @@
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.skyler.adchub;
 				PRODUCT_NAME = ADC_Hub;
 				PROVISIONING_PROFILE_SPECIFIER = "";

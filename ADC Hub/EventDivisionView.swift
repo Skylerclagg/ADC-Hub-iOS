@@ -162,13 +162,6 @@ struct EventDivisionView: View {
                         .foregroundColor(settings.topBarContentColor())
                         .foregroundColor(settings.topBarContentColor())
                 }
-                if navigation_bar_manager.title.contains("Teams") {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        NavigationLink(destination: DataExporter(event: event, division: division).environmentObject(settings)) {
-                            Image(systemName: "doc.badge.plus").foregroundColor(settings.topBarContentColor())
-                        }
-                    }
-                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(settings.tabColor(), for: .navigationBar)

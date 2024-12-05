@@ -14,8 +14,6 @@ import CoreData
 
 struct TeamInfoView: View {
     
-    // Removed watch session reference
-    // @EnvironmentObject var wcSession: WatchSession
     
     @EnvironmentObject var settings: UserSettings
     @EnvironmentObject var dataController: ADCHubDataController

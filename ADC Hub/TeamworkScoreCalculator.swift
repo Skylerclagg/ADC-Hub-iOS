@@ -103,92 +103,53 @@ struct TeamworkScoreCalculator: View {
         VStack(spacing: 0) {
             // Fixed Score View
             ScoreView(totalScore: totalScore, showWarning: isBeanBagConstraintViolated)
-                .zIndex(1)
 
-            // Scrollable Content
-            ScrollView {
-                VStack(spacing: 20) {
-                    // Drone Zone Tops Cleared Section with Warning Signs
-                    CounterSection(
-                        title: "Drone Zone Tops Cleared",
-                        count: $dropZoneTopCleared,
-                        maxCount: 7,
-                        showWarning: isBeanBagConstraintViolated
-                    )
+            // Content
+            VStack(spacing: 10) {
+                // Counters Grid
+                CountersGrid(
+                    dropZoneTopCleared: $dropZoneTopCleared,
+                    greenBeanBags: $greenBeanBags,
+                    blueBeanBags: $blueBeanBags,
+                    neutralBalls: $neutralBalls,
+                    greenBalls: $greenBalls,
+                    blueBalls: $blueBalls,
+                    maxGreenBeanBags: maxGreenBeanBags,
+                    maxBlueBeanBags: maxBlueBeanBags,
+                    maxGreenBalls: maxGreenBalls,
+                    maxNeutralBalls: maxNeutralBalls,
+                    maxBlueBalls: maxBlueBalls,
+                    remainingBeanBags: remainingBeanBags,
+                    remainingBalls: remainingBalls,
+                    isBeanBagConstraintViolated: isBeanBagConstraintViolated
+                )
 
-                    // Green Bean Bags on Drop Zone
-                    CounterSection(
-                        title: "Green Bean Bags on Drop Zone",
-                        count: $greenBeanBags,
-                        maxCount: maxGreenBeanBags,
-                        showWarning: isBeanBagConstraintViolated
-                    )
-
-                    // Blue Bean Bags on Drop Zone
-                    CounterSection(
-                        title: "Blue Bean Bags on Drop Zone",
-                        count: $blueBeanBags,
-                        maxCount: maxBlueBeanBags,
-                        showWarning: isBeanBagConstraintViolated
-                    )
-
-                    // Remaining Bean Bags Indicator
-                    Text("Remaining Bean Bags: \(remainingBeanBags)")
-                        .font(.subheadline)
-                        .foregroundColor(.red)
-
-                    // Green Balls in Zones
-                    CounterSection(
-                        title: "Green Balls in Zones",
-                        count: $greenBalls,
-                        maxCount: maxGreenBalls
-                    )
-
-                    // Neutral Balls in Zones
-                    CounterSection(
-                        title: "Neutral Balls in Zones",
-                        count: $neutralBalls,
-                        maxCount: maxNeutralBalls
-                    )
-
-                    // Blue Balls in Zones
-                    CounterSection(
-                        title: "Blue Balls in Zones",
-                        count: $blueBalls,
-                        maxCount: maxBlueBalls
-                    )
-
-                    // Remaining Balls Indicator
-                    Text("Remaining Balls: \(remainingBalls)")
-                        .font(.subheadline)
-                        .foregroundColor(.red)
-
-                    // Red Drone Box
+                // Drones Section
+                HStack(spacing: 10) {
                     DroneBox(
                         droneColor: "Red",
                         selectedOption: $redDroneSelection,
                         otherDroneSelection: blueDroneSelection
                     )
-
-                    // Blue Drone Box
                     DroneBox(
                         droneColor: "Blue",
                         selectedOption: $blueDroneSelection,
                         otherDroneSelection: redDroneSelection
                     )
                 }
-                .padding()
+                .frame(maxHeight: 220)
+                .padding(.horizontal)
             }
+            .padding(.vertical, 10)
+            .background(Color(.systemGroupedBackground))
         }
-        .navigationTitle("Teamwork Score Calculator") // Add this line
-        .onAppear {
-            navigation_bar_manager.title = "Teamwork Score Calculator"
-        }
+        .navigationTitle("Teamwork Score Calculator")
         .toolbar {
             // Clear Scores Button
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: clearInputs) {
                     Image(systemName: "trash")
+                        .foregroundColor(.red)
                 }
                 .accessibilityLabel("Clear Scores")
             }
@@ -208,86 +169,216 @@ struct TeamworkScoreCalculator: View {
     }
 }
 
-// Score View with Warning Sign
+// MARK: - Score View
+
 struct ScoreView: View {
     let totalScore: Int
     let showWarning: Bool
 
     var body: some View {
-        HStack {
-            if showWarning {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundColor(.red)
+        ZStack {
+            // Background with gradient
+            RoundedRectangle(cornerRadius: 15)
+                .fill(
+                    LinearGradient(
+                        gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
+                .padding(.horizontal)
+
+            HStack {
+                if showWarning {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.yellow)
+                        .scaleEffect(1.2)
+                }
+                Text("Score: \(totalScore)")
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                if showWarning {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.yellow)
+                        .scaleEffect(1.2)
+                }
             }
-            Text("Score: \(totalScore)")
-                .font(.largeTitle)
-                .bold()
-            if showWarning {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundColor(.red)
-            }
+            .padding(.horizontal)
         }
-        .padding()
-        .frame(maxWidth: .infinity)
-        .background(Color(.systemGray6))
+        .frame(height: 80)
+        .padding(.vertical)
     }
 }
 
-// Counter Section with Optional Warning Signs
+// MARK: - Counters Grid
+
+struct CountersGrid: View {
+    @Binding var dropZoneTopCleared: Int
+    @Binding var greenBeanBags: Int
+    @Binding var blueBeanBags: Int
+    @Binding var neutralBalls: Int
+    @Binding var greenBalls: Int
+    @Binding var blueBalls: Int
+    let maxGreenBeanBags: Int
+    let maxBlueBeanBags: Int
+    let maxGreenBalls: Int
+    let maxNeutralBalls: Int
+    let maxBlueBalls: Int
+    let remainingBeanBags: Int
+    let remainingBalls: Int
+    let isBeanBagConstraintViolated: Bool
+
+    var body: some View {
+        VStack(spacing: 10) {
+            // Bean Bags and Drone Zone Tops Cleared
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Bean Bags")
+                    .font(.headline)
+                    .padding(.horizontal)
+                HStack(spacing: 5) {
+                    CounterSection(
+                        title: "Drop Zone Tops Cleared",
+                        count: $dropZoneTopCleared,
+                        maxCount: 7,
+                        showWarning: isBeanBagConstraintViolated,
+                        accentColor: .orange
+                    )
+                    CounterSection(
+                        title: "Green Bean Bags on Drop Zone",
+                        count: $greenBeanBags,
+                        maxCount: maxGreenBeanBags,
+                        showWarning: isBeanBagConstraintViolated,
+                        accentColor: .green
+                    )
+                    CounterSection(
+                        title: "Blue Bean Bags on Drop Zone",
+                        count: $blueBeanBags,
+                        maxCount: maxBlueBeanBags,
+                        showWarning: isBeanBagConstraintViolated,
+                        accentColor: .blue
+                    )
+                }
+                .padding(.horizontal, 5)
+                if isBeanBagConstraintViolated {
+                    Text("Bean bags exceed tops cleared!")
+                        .font(.caption)
+                        .foregroundColor(.red)
+                        .padding(.horizontal)
+                } else {
+                    Text("Remaining Bean Bags: \(remainingBeanBags)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal)
+                }
+            }
+            .padding(.vertical, 5)
+            .background(Color(.secondarySystemGroupedBackground))
+            .cornerRadius(15)
+            .padding(.horizontal, 5)
+            .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
+
+            // Balls Counters
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Balls")
+                    .font(.headline)
+                    .padding(.horizontal)
+                HStack(spacing: 5) {
+                    CounterSection(
+                        title: "Balls in Green Zone",
+                        count: $greenBalls,
+                        maxCount: maxGreenBalls,
+                        accentColor: .green
+                    )
+                    CounterSection(
+                        title: "Balls in Neutral Zone",
+                        count: $neutralBalls,
+                        maxCount: maxNeutralBalls,
+                        accentColor: .gray
+                    )
+                    CounterSection(
+                        title: "Balls in Blue Zone",
+                        count: $blueBalls,
+                        maxCount: maxBlueBalls,
+                        accentColor: .blue
+                    )
+                }
+                .padding(.horizontal, 5)
+                Text("Remaining Balls: \(remainingBalls)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal)
+            }
+            .padding(.vertical, 5)
+            .background(Color(.secondarySystemGroupedBackground))
+            .cornerRadius(15)
+            .padding(.horizontal, 5)
+            .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
+        }
+    }
+}
+
+// MARK: - Counter Section
+
 struct CounterSection: View {
     let title: String
     @Binding var count: Int
     let maxCount: Int
     var showWarning: Bool = false
+    var accentColor: Color = .primary
 
     var body: some View {
-        VStack(spacing: 10) {
-            HStack {
-                if showWarning {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundColor(.red)
-                }
-                Text(title)
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                if showWarning {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundColor(.red)
-                }
-            }
+        VStack(spacing: 5) {
+            Text(title)
+                .font(.caption)
+                .fontWeight(.medium)
+                .multilineTextAlignment(.center)
+                .foregroundColor(accentColor)
+                .lineLimit(2)
+                .minimumScaleFactor(0.5)
 
-            HStack {
-                Spacer()
-
+            HStack(spacing: 10) {
                 Button(action: {
                     if count > 0 {
                         count -= 1
                     }
                 }) {
-                    Image(systemName: "minus.circle")
-                        .font(.largeTitle)
+                    Image(systemName: "minus.circle.fill")
+                        .font(.system(size: 28))
+                        .foregroundColor(.red)
                 }
 
                 Text("\(count)")
-                    .font(.title)
-                    .frame(width: 50, alignment: .center)
+                    .font(.title2)
+                    .frame(width: 30, alignment: .center)
 
                 Button(action: {
                     if count < maxCount {
                         count += 1
                     }
                 }) {
-                    Image(systemName: "plus.circle")
-                        .font(.largeTitle)
+                    Image(systemName: "plus.circle.fill")
+                        .font(.system(size: 28))
+                        .foregroundColor(.green)
                 }
-
-                Spacer()
+            }
+            if showWarning {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundColor(.red)
             }
         }
+        .padding(8)
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 3)
+        .frame(maxWidth: .infinity)
     }
 }
 
-// Drone Box
+// MARK: - Drone Box
+
 struct DroneBox: View {
     let droneColor: String
     @Binding var selectedOption: String
@@ -297,17 +388,15 @@ struct DroneBox: View {
         VStack(spacing: 10) {
             Text("\(droneColor) Drone")
                 .font(.headline)
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color(.systemGray5))
-                .cornerRadius(10)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(droneUIColor(), lineWidth: 2) // Outline of the box
-                )
+                .foregroundColor(droneUIColor())
 
-            // First Row: None and Small Cube
-            HStack {
+            // Options Grid
+            let columns = [
+                GridItem(.flexible()),
+                GridItem(.flexible())
+            ]
+
+            LazyVGrid(columns: columns, spacing: 5) {
                 DroneOptionButton(
                     label: "None",
                     isSelected: selectedOption == "None",
@@ -324,11 +413,6 @@ struct DroneBox: View {
                 ) {
                     selectedOption = "Small Cube"
                 }
-            }
-
-            // Second Row: Large Cube (Centered)
-            HStack {
-                Spacer()
                 DroneOptionButton(
                     label: "Large Cube",
                     isSelected: selectedOption == "Large Cube",
@@ -337,11 +421,6 @@ struct DroneBox: View {
                 ) {
                     selectedOption = "Large Cube"
                 }
-                Spacer()
-            }
-
-            // Third Row: Landing Pad and Bullseye
-            HStack {
                 DroneOptionButton(
                     label: "Landing Pad",
                     isSelected: selectedOption == "Landing Pad",
@@ -360,9 +439,14 @@ struct DroneBox: View {
                 }
             }
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(10)
+        .padding(8)
+        .background(Color(.systemBackground))
+        .cornerRadius(15)
+        .shadow(color: droneUIColor().opacity(0.2), radius: 5, x: 0, y: 3)
+        .overlay(
+            RoundedRectangle(cornerRadius: 15)
+                .stroke(droneUIColor(), lineWidth: 1)
+        )
     }
 
     // Function to determine if an option should be disabled
@@ -393,7 +477,8 @@ struct DroneBox: View {
     }
 }
 
-// Drone Option Button
+// MARK: - Drone Option Button
+
 struct DroneOptionButton: View {
     let label: String
     let isSelected: Bool
@@ -406,18 +491,25 @@ struct DroneOptionButton: View {
             action()
         }) {
             Text(label)
-                .padding()
+                .font(.caption)
+                .padding(6)
                 .frame(maxWidth: .infinity)
-                .background(isSelected ? droneColor : Color.clear)
+                .background(isSelected ? droneColor.opacity(0.7) : Color(.systemGray5))
                 .foregroundColor(isDisabled ? .gray : (isSelected ? .white : droneColor))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(droneColor, lineWidth: 2) // Outline of the button
-                )
+                .cornerRadius(6)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
         }
         .disabled(isDisabled)
+        .overlay(
+            RoundedRectangle(cornerRadius: 6)
+                .stroke(droneColor, lineWidth: isSelected ? 0 : 1)
+        )
+        .shadow(color: isSelected ? droneColor.opacity(0.3) : Color.clear, radius: 2, x: 0, y: 1)
     }
 }
+
+// MARK: - Preview
 
 struct TeamworkScoreCalculator_Previews: PreviewProvider {
     static var previews: some View {
