@@ -105,42 +105,111 @@ struct TeamworkScoreCalculator: View {
             ScoreView(totalScore: totalScore, showWarning: isBeanBagConstraintViolated)
 
             // Content
-            VStack(spacing: 10) {
-                // Counters Grid
-                CountersGrid(
-                    dropZoneTopCleared: $dropZoneTopCleared,
-                    greenBeanBags: $greenBeanBags,
-                    blueBeanBags: $blueBeanBags,
-                    neutralBalls: $neutralBalls,
-                    greenBalls: $greenBalls,
-                    blueBalls: $blueBalls,
-                    maxGreenBeanBags: maxGreenBeanBags,
-                    maxBlueBeanBags: maxBlueBeanBags,
-                    maxGreenBalls: maxGreenBalls,
-                    maxNeutralBalls: maxNeutralBalls,
-                    maxBlueBalls: maxBlueBalls,
-                    remainingBeanBags: remainingBeanBags,
-                    remainingBalls: remainingBalls,
-                    isBeanBagConstraintViolated: isBeanBagConstraintViolated
-                )
+            ScrollView { // Added ScrollView to handle very small screens if necessary
+                VStack(spacing: 10) {
+                    // Counters Grid arranged in columns
+                    HStack(alignment: .top, spacing: 10) {
+                        // Bean Bags Column
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Bean Bags")
+                                .font(.headline)
+                                .padding(.bottom, 5)
 
-                // Drones Section
-                HStack(spacing: 10) {
-                    DroneBox(
-                        droneColor: "Red",
-                        selectedOption: $redDroneSelection,
-                        otherDroneSelection: blueDroneSelection
-                    )
-                    DroneBox(
-                        droneColor: "Blue",
-                        selectedOption: $blueDroneSelection,
-                        otherDroneSelection: redDroneSelection
-                    )
+                            CounterSection(
+                                title: "Tops Cleared",
+                                count: $dropZoneTopCleared,
+                                maxCount: 7,
+                                showWarning: isBeanBagConstraintViolated,
+                                accentColor: .orange
+                            )
+
+                            CounterSection(
+                                title: "Green Drop Zone",
+                                count: $greenBeanBags,
+                                maxCount: maxGreenBeanBags,
+                                showWarning: isBeanBagConstraintViolated,
+                                accentColor: .green
+                            )
+
+                            CounterSection(
+                                title: "Blue Drop Zone",
+                                count: $blueBeanBags,
+                                maxCount: maxBlueBeanBags,
+                                showWarning: isBeanBagConstraintViolated,
+                                accentColor: .blue
+                            )
+
+                            if isBeanBagConstraintViolated {
+                                Text("Bean bags exceed tops cleared!")
+                                    .font(.caption)
+                                    .foregroundColor(.red)
+                            } else {
+                                Text("Remaining Bean Bags: \(remainingBeanBags)")
+                                    .font(.caption)
+                                    .foregroundColor(.red)
+                            }
+                        }
+                        .padding()
+                        .background(Color(.secondarySystemGroupedBackground))
+                        .cornerRadius(15)
+                        .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
+
+                        // Balls Column
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Balls")
+                                .font(.headline)
+                                .padding(.bottom, 5)
+
+                            CounterSection(
+                                title: "Green Zone",
+                                count: $greenBalls,
+                                maxCount: maxGreenBalls,
+                                accentColor: .green
+                            )
+
+                            CounterSection(
+                                title: "Neutral Zone",
+                                count: $neutralBalls,
+                                maxCount: maxNeutralBalls,
+                                accentColor: .gray
+                            )
+
+                            CounterSection(
+                                title: "Blue Zone",
+                                count: $blueBalls,
+                                maxCount: maxBlueBalls,
+                                accentColor: .blue
+                            )
+
+                            Text("Remaining Balls: \(remainingBalls)")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                        }
+                        .padding()
+                        .background(Color(.secondarySystemGroupedBackground))
+                        .cornerRadius(15)
+                        .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
+                    }
+                    .padding(.horizontal, 5)
+
+                    // Drones Section
+                    HStack(spacing: 10) {
+                        DroneBox(
+                            droneColor: "Red",
+                            selectedOption: $redDroneSelection,
+                            otherDroneSelection: blueDroneSelection
+                        )
+                        DroneBox(
+                            droneColor: "Blue",
+                            selectedOption: $blueDroneSelection,
+                            otherDroneSelection: redDroneSelection
+                        )
+                    }
+                    .frame(maxHeight: 220)
+                    .padding(.horizontal, 5)
                 }
-                .frame(maxHeight: 220)
-                .padding(.horizontal)
+                .padding(.vertical, 10)
             }
-            .padding(.vertical, 10)
             .background(Color(.systemGroupedBackground))
         }
         .navigationTitle("Teamwork Score Calculator")
@@ -181,7 +250,7 @@ struct ScoreView: View {
             RoundedRectangle(cornerRadius: 15)
                 .fill(
                     LinearGradient(
-                        gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)]),
+                        gradient: Gradient(colors: [Color.blue.opacity(0.8), Color.green.opacity(0.8)]),
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
@@ -210,113 +279,6 @@ struct ScoreView: View {
         }
         .frame(height: 80)
         .padding(.vertical)
-    }
-}
-
-// MARK: - Counters Grid
-
-struct CountersGrid: View {
-    @Binding var dropZoneTopCleared: Int
-    @Binding var greenBeanBags: Int
-    @Binding var blueBeanBags: Int
-    @Binding var neutralBalls: Int
-    @Binding var greenBalls: Int
-    @Binding var blueBalls: Int
-    let maxGreenBeanBags: Int
-    let maxBlueBeanBags: Int
-    let maxGreenBalls: Int
-    let maxNeutralBalls: Int
-    let maxBlueBalls: Int
-    let remainingBeanBags: Int
-    let remainingBalls: Int
-    let isBeanBagConstraintViolated: Bool
-
-    var body: some View {
-        VStack(spacing: 10) {
-            // Bean Bags and Drone Zone Tops Cleared
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Bean Bags")
-                    .font(.headline)
-                    .padding(.horizontal)
-                HStack(spacing: 5) {
-                    CounterSection(
-                        title: "Drop Zone Tops Cleared",
-                        count: $dropZoneTopCleared,
-                        maxCount: 7,
-                        showWarning: isBeanBagConstraintViolated,
-                        accentColor: .orange
-                    )
-                    CounterSection(
-                        title: "Green Bean Bags on Drop Zone",
-                        count: $greenBeanBags,
-                        maxCount: maxGreenBeanBags,
-                        showWarning: isBeanBagConstraintViolated,
-                        accentColor: .green
-                    )
-                    CounterSection(
-                        title: "Blue Bean Bags on Drop Zone",
-                        count: $blueBeanBags,
-                        maxCount: maxBlueBeanBags,
-                        showWarning: isBeanBagConstraintViolated,
-                        accentColor: .blue
-                    )
-                }
-                .padding(.horizontal, 5)
-                if isBeanBagConstraintViolated {
-                    Text("Bean bags exceed tops cleared!")
-                        .font(.caption)
-                        .foregroundColor(.red)
-                        .padding(.horizontal)
-                } else {
-                    Text("Remaining Bean Bags: \(remainingBeanBags)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .padding(.horizontal)
-                }
-            }
-            .padding(.vertical, 5)
-            .background(Color(.secondarySystemGroupedBackground))
-            .cornerRadius(15)
-            .padding(.horizontal, 5)
-            .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
-
-            // Balls Counters
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Balls")
-                    .font(.headline)
-                    .padding(.horizontal)
-                HStack(spacing: 5) {
-                    CounterSection(
-                        title: "Balls in Green Zone",
-                        count: $greenBalls,
-                        maxCount: maxGreenBalls,
-                        accentColor: .green
-                    )
-                    CounterSection(
-                        title: "Balls in Neutral Zone",
-                        count: $neutralBalls,
-                        maxCount: maxNeutralBalls,
-                        accentColor: .gray
-                    )
-                    CounterSection(
-                        title: "Balls in Blue Zone",
-                        count: $blueBalls,
-                        maxCount: maxBlueBalls,
-                        accentColor: .blue
-                    )
-                }
-                .padding(.horizontal, 5)
-                Text("Remaining Balls: \(remainingBalls)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal)
-            }
-            .padding(.vertical, 5)
-            .background(Color(.secondarySystemGroupedBackground))
-            .cornerRadius(15)
-            .padding(.horizontal, 5)
-            .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
-        }
     }
 }
 

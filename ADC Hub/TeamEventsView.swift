@@ -11,10 +11,9 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct EventRow: View {
-    
-    // Removed watch session reference
-    // @EnvironmentObject var wcSession: WatchSession
     
     @EnvironmentObject var settings: UserSettings
     @EnvironmentObject var favorites: FavoriteStorage
@@ -33,19 +32,28 @@ struct EventRow: View {
         location_array = location_array.filter { $0 != "" }
         return location_array.joined(separator: ", ").replacingOccurrences(of: "United States", with: "USA")
     }
+    
+    func isEventCanceled() -> Bool {
+        let eventNameLowercased = event.name.lowercased()
+        return eventNameLowercased.contains("canceled") || eventNameLowercased.contains("cancelled")
+    }
 
     var body: some View {
         NavigationLink(destination: EventView(event: self.event, team: self.team)
-                        // Removed watch session environment object
-                        // .environmentObject(wcSession)
                         .environmentObject(favorites)
                         .environmentObject(settings)
                         .environmentObject(dataController)) {
-            VStack {
+            VStack(alignment: .leading) {
+                // Event Name with Conditional Styling
                 Text(self.event.name)
+                    .font(.headline)
+                    .foregroundColor(isEventCanceled() ? .red : .primary)
+                    .strikethrough(isEventCanceled(), color: .red)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .frame(height: 20)
+                
                 Spacer().frame(height: 5)
+                
                 HStack {
                     Text(generate_location())
                         .font(.system(size: 11))
@@ -55,10 +63,18 @@ struct EventRow: View {
                             .font(.system(size: 11))
                     }
                 }
+                // Display a status indicator
+                if isEventCanceled() {
+                    Text("Canceled")
+                        .font(.footnote)
+                        .foregroundColor(.red)
+                }
             }
+            .padding(.vertical, 5)
         }
     }
 }
+
 
 class TeamEvents: ObservableObject {
     @Published var event_indexes: [String]
@@ -154,6 +170,6 @@ struct TeamEventsView: View {
 
 struct TeamEventsView_Previews: PreviewProvider {
     static var previews: some View {
-        TeamEventsView(team_number: "229V")
+        TeamEventsView(team_number: "12345A")
     }
 }

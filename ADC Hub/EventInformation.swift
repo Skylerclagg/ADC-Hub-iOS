@@ -25,6 +25,15 @@ struct EventInformation: View {
         self.event = event
         dateFormatter.dateFormat = "yyyy-MM-dd"
     }
+    
+    var eventRegion: String {
+            let state = event.region.trimmingCharacters(in: .whitespacesAndNewlines)
+            let formattedState = state.capitalized
+            
+            let normalizedState = StateRegionMapping.stateNameVariations[formattedState] ?? formattedState
+       
+            return StateRegionMapping.stateToRegionMap[normalizedState] ?? "Unknown Region"
+        }
         
     var body: some View {
         VStack {
@@ -77,9 +86,14 @@ struct EventInformation: View {
                         Text(event.city)
                     }
                     HStack {
-                        Text("Region")
+                        Text("State")
                         Spacer()
                         Text(event.region)
+                    }
+                    HStack{
+                        Text("Region")
+                        Spacer()
+                        Text(eventRegion)
                     }
                     HStack {
                         Text("Country")

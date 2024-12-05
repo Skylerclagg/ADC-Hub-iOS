@@ -18,6 +18,7 @@
 		3DAFC80E2A2640EB00A0C41A /* CoreML in Resources */ = {isa = PBXBuildFile; fileRef = 3DAFC80D2A2640EB00A0C41A /* CoreML */; };
 		3DB11E52299543DC001DDB02 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DB11E51299543DC001DDB02 /* Assets.xcassets */; };
 		3DE63FAF2C59A59C0049939C /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3D22AAA92BD9C16B001AD59E /* Config.plist */; };
+		D4C3DA7C2D03984300C6FFF9 /* StateRegionMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C3DA7B2D03982D00C6FFF9 /* StateRegionMapping.swift */; };
 		D4C6BFC62CD26FE90034C350 /* PilotingSkillsCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C6BFC52CD26FE90034C350 /* PilotingSkillsCalculator.swift */; };
 		D4C6BFC82CD270B70034C350 /* ScoreCalculatorsHome.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C6BFC72CD270B70034C350 /* ScoreCalculatorsHome.swift */; };
 		D4C6BFCA2CD273300034C350 /* AutonomousFlightSkillsCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C6BFC92CD2732F0034C350 /* AutonomousFlightSkillsCalculator.swift */; };
@@ -134,6 +135,7 @@
 		3DB21DD42B054D6400B12803 /* RootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		3DE63FA12C5808BA0049939C /* Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared.swift; sourceTree = "<group>"; };
 		3DFB59C32C536BCC0061CE6C /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
+		D4C3DA7B2D03982D00C6FFF9 /* StateRegionMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateRegionMapping.swift; sourceTree = "<group>"; };
 		D4C6BFC52CD26FE90034C350 /* PilotingSkillsCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PilotingSkillsCalculator.swift; sourceTree = "<group>"; };
 		D4C6BFC72CD270B70034C350 /* ScoreCalculatorsHome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreCalculatorsHome.swift; sourceTree = "<group>"; };
 		D4C6BFC92CD2732F0034C350 /* AutonomousFlightSkillsCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutonomousFlightSkillsCalculator.swift; sourceTree = "<group>"; };
@@ -235,6 +237,7 @@
 		3DB11E4C299543D9001DDB02 /* ADC Hub */ = {
 			isa = PBXGroup;
 			children = (
+				D4C3DA7B2D03982D00C6FFF9 /* StateRegionMapping.swift */,
 				D4C6BFC92CD2732F0034C350 /* AutonomousFlightSkillsCalculator.swift */,
 				D4C6BFC72CD270B70034C350 /* ScoreCalculatorsHome.swift */,
 				D4C6BFC52CD26FE90034C350 /* PilotingSkillsCalculator.swift */,
@@ -502,6 +505,7 @@
 				D4F0847D2CA47C230032E72D /* EventDivisionView.swift in Sources */,
 				D4F0847E2CA47C230032E72D /* EventDivisionAwards.swift in Sources */,
 				D4F0847F2CA47C230032E72D /* EventDivisionMatches.swift in Sources */,
+				D4C3DA7C2D03984300C6FFF9 /* StateRegionMapping.swift in Sources */,
 				D4F084802CA47C230032E72D /* EventDivisionRankings.swift in Sources */,
 				D4F084812CA47C230032E72D /* EventSkillsRankings.swift in Sources */,
 				D4F084842CA47C230032E72D /* Lookup.swift in Sources */,

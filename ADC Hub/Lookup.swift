@@ -177,8 +177,7 @@ struct EventLookup: View {
                     Button(action: {
                         // Toggle the date filter state
                         eventSearch.isDateFilterActive.toggle()
-                        // Fetch events with the updated date filter
-                        eventSearch.fetch_events(season_query: selected_season)
+                        // Removed explicit fetch_events call
                     }) {
                         Text(eventSearch.isDateFilterActive ? "Remove Date Filter" : "Add Date Filter")
                     }
@@ -199,8 +198,15 @@ struct EventLookup: View {
 
                 // Event List
                 List(eventSearch.event_indexes, id: \.self) { event_index in
-                    EventRow(event: eventSearch.filtered_events[Int(event_index)!])
-                        .environmentObject(dataController)
+                    // Safely unwrap the index to prevent crashes
+                    if let index = Int(event_index), index < eventSearch.filtered_events.count {
+                        EventRow(event: eventSearch.filtered_events[index])
+                            .environmentObject(dataController)
+                    } else {
+                        // Handle invalid index gracefully
+                        Text("Invalid Event")
+                            .foregroundColor(.red)
+                    }
                 }
             }
             .onAppear {
@@ -221,15 +227,9 @@ struct EventLookup: View {
     }
 }
 
-
-
-
-
 import Foundation
 import SwiftUI
-
-import Foundation
-import SwiftUI
+import Combine
 
 class EventSearch: ObservableObject {
     @Published var event_indexes: [String] = []
@@ -244,110 +244,114 @@ class EventSearch: ObservableObject {
     @Published var isDateFilterActive: Bool = true
     
     // Regions and their associated states/provinces/territories
-    let regions_map: [String] = [ "Northeast", "North Central", "Southeast", "South Central", "West"]
+    let regions_map: [String] = ["Northeast", "North Central", "Southeast", "South Central", "West"]
     
-    let regionStatesMap: [String: [String]] = [
-        "Northeast": [
-            "Connecticut", "Delaware", "District of Columbia", "Kentucky", "Maryland", "Massachusetts",
-            "Maine", "New Hampshire", "New Jersey", "New York", "Pennsylvania", "Rhode Island", "Vermont",
-            "Virginia", "West Virginia",
-            "Quebec", "Newfoundland and Labrador", "New Brunswick", "Prince Edward Island", "Nova Scotia"
-        ],
-        "North Central": [
-            "Illinois", "Indiana", "Iowa", "Michigan", "Minnesota", "Nebraska", "North Dakota", "Ohio",
-            "South Dakota", "Wisconsin",
-            "Manitoba", "Ontario", "Nunavut"
-        ],
-        "Southeast": [
-            "Alabama", "Arkansas", "Florida", "Georgia", "Louisiana", "Mississippi", "North Carolina",
-            "South Carolina", "Tennessee"
-        ],
-        "South Central": [
-            "Kansas", "Missouri", "New Mexico", "Oklahoma", "Texas"
-        ],
-        "West": [
-            "Alaska", "American Samoa", "Arizona", "California", "Colorado", "Hawaii", "Idaho", "Montana",
-            "Nevada", "Oregon", "Utah", "Washington", "Wyoming",
-            "British Columbia", "Alberta", "Saskatchewan", "Yukon", "Northwest Territories"
-        ]
-    ]
-    
-    // Map for state/province name variations
-    let stateNameVariations: [String: String] = [
-        "DC": "District of Columbia",
-        "Washington, D.C.": "District of Columbia",
-        "Newfoundland": "Newfoundland and Labrador",
-        "NWT": "Northwest Territories",
-        "Yukon Territory": "Yukon",
-        // Add more variations as needed
-    ]
+    // Removed local regionStatesMap and stateNameVariations
     
     // Store the current season ID
     private var current_season_id: Int = API.get_current_season_id()
+    
+    // Combine cancellables
+    private var cancellables = Set<AnyCancellable>()
     
     // Initialize with optional season query
     init(season_query: Int? = nil) {
         self.selected_season = season_query ?? API.selected_season_id()
         fetch_events(season_query: self.selected_season)
+        setupSubscribers()
     }
     
-    // Fetch events for the selected season
-        func fetch_events(season_query: Int? = nil) {
-            if let season = season_query {
-                self.selected_season = season
-            }
-            
-            // Prepare API request parameters
-            var params: [String: Any] = ["per_page": 250]
-            
-            if isDateFilterActive {
-                // Apply date filter to fetch events starting one week prior to the current date
-                let defaultStartDate = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
-                let dateFormatter = ISO8601DateFormatter()
-                dateFormatter.formatOptions = [.withInternetDateTime]
-                let startDateString = dateFormatter.string(from: defaultStartDate)
-                params["start"] = startDateString
+    // Setup Combine subscribers to monitor name_query changes
+    private func setupSubscribers() {
+        // Monitor changes to name_query
+        $name_query
+            .debounce(for: .milliseconds(300), scheduler: RunLoop.main) // Debounce to reduce rapid calls
+            .removeDuplicates()
+            .sink { [weak self] newNameQuery in
+                guard let self = self else { return }
                 
-                // Debugging: Print the start date
-                print("Fetching events starting from: \(startDateString)")
-            } else {
-                print("Fetching all events for season \(self.selected_season)")
-            }
-            
-            // Fetch events from the API
-            let request_url = "/seasons/\(self.selected_season)/events"
-            let data = ADCHubAPI.robotevents_request(request_url: request_url, params: params)
-            
-            // Clear existing events and states
-            all_events.removeAll()
-            states_map.removeAll()
-            
-            for event_data in data {
-                // Initialize Event objects from the API response
-                let event = Event(fetch: false, data: event_data)
-                
-                // Normalize event.region using variations mapping
-                if let normalizedRegion = stateNameVariations[event.region] {
-                    event.region = normalizedRegion
+                if !newNameQuery.isEmpty && self.isDateFilterActive {
+                    // Disable date filter when searching by name
+                    self.isDateFilterActive = false
+                    self.fetch_events(season_query: self.selected_season, applyDateFilter: false)
+                } else if newNameQuery.isEmpty {
+                    // Re-enable date filter based on the toggle state
+                    self.fetch_events(season_query: self.selected_season, applyDateFilter: self.isDateFilterActive)
                 }
-                
-                all_events.append(event)
-                
-                // Add state to states_map if not already present
-                if !event.region.isEmpty && !states_map.contains(event.region) {
-                    states_map.append(event.region)
-                }
+                // Else, no change needed
             }
-            
-            // Sort the states for better UI presentation
-            states_map.sort()
-            
-            // Debugging: Print the number of events fetched
-            print("Number of events fetched: \(all_events.count)")
-            
-            // Apply filters to the newly fetched events
-            filter_events()
+            .store(in: &cancellables)
+        
+        // Monitor changes to isDateFilterActive when name_query is empty
+        $isDateFilterActive
+            .filter { [weak self] _ in
+                guard let self = self else { return false }
+                return self.name_query.isEmpty
+            }
+            .sink { [weak self] newValue in
+                guard let self = self else { return }
+                self.fetch_events(season_query: self.selected_season, applyDateFilter: newValue)
+            }
+            .store(in: &cancellables)
+    }
+    
+    // Fetch events for the selected season with optional date filter
+    func fetch_events(season_query: Int? = nil, applyDateFilter: Bool = true) {
+        if let season = season_query {
+            self.selected_season = season
         }
+        
+        // Prepare API request parameters
+        var params: [String: Any] = ["per_page": 250]
+        
+        if applyDateFilter {
+            // Apply date filter to fetch events starting one week prior to the current date
+            let defaultStartDate = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+            let dateFormatter = ISO8601DateFormatter()
+            dateFormatter.formatOptions = [.withInternetDateTime]
+            let startDateString = dateFormatter.string(from: defaultStartDate)
+            params["start"] = startDateString
+            
+            // Debugging: Print the start date
+            print("Fetching events starting from: \(startDateString)")
+        } else {
+            print("Fetching all events for season \(self.selected_season)")
+        }
+        
+        // Fetch events from the API
+        let request_url = "/seasons/\(self.selected_season)/events"
+        let data = ADCHubAPI.robotevents_request(request_url: request_url, params: params)
+        
+        // Clear existing events and states
+        all_events.removeAll()
+        states_map.removeAll()
+        
+        for event_data in data {
+            // Initialize Event objects from the API response
+            var event = Event(fetch: false, data: event_data)
+            
+            // Normalize event.region using variations mapping
+            if let normalizedRegion = StateRegionMapping.stateNameVariations[event.region] {
+                event.region = normalizedRegion
+            }
+            
+            all_events.append(event)
+            
+            // Add state to states_map if not already present
+            if !event.region.isEmpty && !states_map.contains(event.region) {
+                states_map.append(event.region)
+            }
+        }
+        
+        // Sort the states for better UI presentation
+        states_map.sort()
+        
+        // Debugging: Print the number of events fetched
+        print("Number of events fetched: \(all_events.count)")
+        
+        // Apply filters to the newly fetched events
+        filter_events()
+    }
     
     // Update event indexes for SwiftUI List
     private func update_event_indexes() {
@@ -393,7 +397,7 @@ class EventSearch: ObservableObject {
             
             // Region filter
             if !region_query.isEmpty && region_query != "All Regions" {
-                if let statesInRegion = regionStatesMap[region_query] {
+                if let statesInRegion = StateRegionMapping.regionToStatesMap[region_query] {
                     let eventRegion = event.region.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
                     let regionMatches = statesInRegion.contains { state in
                         state.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) == eventRegion
@@ -404,7 +408,7 @@ class EventSearch: ObservableObject {
                     }
                 } else {
                     // Exclude if region not found
-                    print("Region \(region_query) not found in regionStatesMap")
+                    print("Region \(region_query) not found in regionToStatesMap")
                     matches = false
                 }
             }
@@ -416,8 +420,6 @@ class EventSearch: ObservableObject {
         print("Filtered Events Count: \(filtered_events.count)")
     }
 }
-
-
 
 
 struct TeamLookup: View {
@@ -629,10 +631,14 @@ struct TeamLookup: View {
                     Text(fetched ?( worldSkillsData.worldSkills.ranking != 0 ? "\(worldSkillsData.worldSkills.combined)" : "No Data Available") : "")
                 }
                 HStack {
-                    Text("Awards")
+                        Menu("Awards") {
+                            ForEach(0..<award_counts.count, id: \.self) { index in
+                            Text("\(Array(award_counts.values)[index])x \(Array(award_counts.keys)[index])")
+                            }
+                        }
                     Spacer()
-                    Text(fetched ? "\(self.team.awards.count)" : "")
-                };if editable {
+                    Text(fetched && team.registered ? "\(self.team.awards.count)" : "")
+                    };if editable {
                 HStack {
                     NavigationLink(destination: TeamEventsView(team_number: team.number).environmentObject(settings).environmentObject(dataController)) {
                         Text("Events")

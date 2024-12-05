@@ -13,6 +13,7 @@ import SwiftUI
 
 class NavigationBarManager: ObservableObject {
     @Published var title: String
+    @Published var shouldReload: Bool = false
     init(title: String) {
         self.title = title
     }
@@ -125,6 +126,17 @@ struct RootView: View {
                             ToolbarItem(placement: .topBarTrailing) {
                                 NavigationLink(destination: Settings().environmentObject(favorites).environmentObject(settings).environmentObject(dataController).environmentObject(navigation_bar_manager).tint(settings.buttonColor()).tag(4)) { // Referencing Settings struct from another file
                                     Image(systemName: "gearshape")
+                                }
+                            }
+                            if navigation_bar_manager.title.contains("Game Manual"){
+                                ToolbarItem(placement: .topBarTrailing){
+                                    Button(action: {
+                                        navigation_bar_manager.shouldReload = true
+                                    }) {
+                                        Image(systemName: "arrow.clockwise")
+                                    }
+                                    .foregroundColor(settings.topBarContentColor())
+                                    .accessibilityLabel("Refresh")
                                 }
                             }
                             if navigation_bar_manager.title.contains("Skills") {
