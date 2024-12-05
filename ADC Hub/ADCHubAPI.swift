@@ -328,6 +328,20 @@ public class ADCHubAPI {
         return !self.season_id_map.isEmpty ? self.season_id_map[0].keys.first ?? 190 : 190
     }
     
+    public func get_current_season_id() -> Int {
+            // Fetch the current season data using active=true
+            let seasons_data = ADCHubAPI.robotevents_request(request_url: "/seasons", params: ["program": [44], "active": true])
+            
+            // Assuming the API returns only one season when active=true
+            if let current_season = seasons_data.first,
+               let season_id = current_season["id"] as? Int {
+                return season_id
+            }
+            
+            // If no active season is found, return a default value or handle appropriately
+            return self.active_season_id()
+        }
+    
     public func update_world_skills_cache(season: Int? = nil) {
         
         self.imported_skills = false
@@ -442,7 +456,7 @@ public class ADCHubAPI {
             dispatchGroup.leave()
         
         }
-       /* For later feature to show a combined skills ranking 
+       /* For a possible later feature to show a combined skills ranking
         dispatchGroup.notify(queue: .main) {
             let combinedTeams = self.middle_school_world_skills_cache.teams + self.high_school_world_skills_cache.teams
             self.combined_world_skills_cache.teams = combinedTeams
@@ -784,6 +798,8 @@ public class Event: Identifiable {
     public var skills_rankings: [TeamSkillsRanking]
     public var awards: [Division: [DivisionalAward]]
     public var livestream_link: String?
+    public var type: String          // Event type text, e.g., "Tournament"
+    public var type_id: Int          // Event type ID, e.g., 1
     
     public init(id: Int = 0, sku: String = "", fetch: Bool = true, data: [String: Any] = [:]) {
         
@@ -808,6 +824,14 @@ public class Event: Identifiable {
         self.skills_rankings = [TeamSkillsRanking]()
         self.awards = [Division: [DivisionalAward]]()
         self.livestream_link = data["livestream_link"] as? String
+
+        if let eventType = data["event_type"] as? [String: Any] {
+            self.type = eventType["text"] as? String ?? ""
+            self.type_id = eventType["id"] as? Int ?? -1
+        } else {
+            self.type = ""
+            self.type_id = -1
+        }
         
         if data["divisions"] != nil {
             for division in (data["divisions"] as! [[String: Any]]) {
@@ -819,6 +843,7 @@ public class Event: Identifiable {
             self.fetch_info()
         }
     }
+
     
     public func fetch_info() {
         
