@@ -108,8 +108,12 @@ struct BulletList: View {
                         .frame(width: bulletWidth,
                                alignment: bulletAlignment)
                     Text(data)
+                        .lineLimit(nil)
+                        .multilineTextAlignment(.leading)
                         .frame(maxWidth: .infinity,
-                               alignment: .leading)
+                               maxHeight: .infinity,
+                               alignment: .leading).font(.body) // Adjust font size as needed
+                    .fixedSize(horizontal: false, vertical: true)
                 }
             }
         }
