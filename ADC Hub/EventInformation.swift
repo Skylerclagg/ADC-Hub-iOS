@@ -131,7 +131,7 @@ struct EventInformation: View {
                     .foregroundColor(settings.topBarContentColor())
             }
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Link(destination: URL(string: "https://www.robotevents.com/robot-competitions/vex-robotics-competition/\(self.event.sku).html")!) {
+                Link(destination: URL(string: "https://www.robotevents.com/robot-competitions/adc/\(self.event.sku).html")!) {
                     Image(systemName: "link")
                 }
                 Button(action: {
