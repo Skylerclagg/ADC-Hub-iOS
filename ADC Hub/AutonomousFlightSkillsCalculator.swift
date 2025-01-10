@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AutonomousFlightSkillsCalculator: View {
     @EnvironmentObject var navigation_bar_manager: NavigationBarManager
-    @EnvironmentObject var settings: UserSettings
+    @EnvironmentObject var settings: UserSettings  // Must have `enableHaptics`
     @Environment(\.colorScheme) var colorScheme // Detect light or dark mode
 
     // State variables for tasks
@@ -64,11 +64,13 @@ struct AutonomousFlightSkillsCalculator: View {
                 Text("\(totalScore)")
                     .font(.largeTitle)
                     .fontWeight(.bold)
-                    .foregroundStyle(LinearGradient(
-                        colors: [.blue, .green],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )) // Gradient color for total score to make it pop
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.blue, .green],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    ) // Gradient color for total score
             }
 
             // Per Color Mat Tasks Section
@@ -82,6 +84,10 @@ struct AutonomousFlightSkillsCalculator: View {
                             .foregroundStyle(textColor)
                     }
                 }
+                .onChange(of: takeOffCount) { _ in
+                    triggerHapticsIfEnabled()
+                }
+
                 Stepper(value: $identifyColorCount, in: 0...2) {
                     HStack {
                         Text("Identify Color Count:")
@@ -91,6 +97,10 @@ struct AutonomousFlightSkillsCalculator: View {
                             .foregroundStyle(textColor)
                     }
                 }
+                .onChange(of: identifyColorCount) { _ in
+                    triggerHapticsIfEnabled()
+                }
+
                 Stepper(value: $figure8Count, in: 0...2) {
                     HStack {
                         Text("Complete a Figure 8:")
@@ -100,6 +110,10 @@ struct AutonomousFlightSkillsCalculator: View {
                             .foregroundStyle(textColor)
                     }
                 }
+                .onChange(of: figure8Count) { _ in
+                    triggerHapticsIfEnabled()
+                }
+
                 Stepper(value: $smallHoleCount, in: 0...2) {
                     HStack {
                         Text("Fly Through Small Hole:")
@@ -109,6 +123,10 @@ struct AutonomousFlightSkillsCalculator: View {
                             .foregroundStyle(textColor)
                     }
                 }
+                .onChange(of: smallHoleCount) { _ in
+                    triggerHapticsIfEnabled()
+                }
+
                 Stepper(value: $largeHoleCount, in: 0...2) {
                     HStack {
                         Text("Fly Through Large Hole:")
@@ -118,6 +136,10 @@ struct AutonomousFlightSkillsCalculator: View {
                             .foregroundStyle(textColor)
                     }
                 }
+                .onChange(of: largeHoleCount) { _ in
+                    triggerHapticsIfEnabled()
+                }
+
                 Stepper(value: $archGateCount, in: 0...4) {
                     HStack {
                         Text("Fly Under Arch Gate:")
@@ -126,6 +148,9 @@ struct AutonomousFlightSkillsCalculator: View {
                         Text("\(archGateCount)")
                             .foregroundStyle(textColor)
                     }
+                }
+                .onChange(of: archGateCount) { _ in
+                    triggerHapticsIfEnabled()
                 }
                 .help("Max 2 per Arch Gate (2 Arch Gates)")
 
@@ -138,6 +163,9 @@ struct AutonomousFlightSkillsCalculator: View {
                             .foregroundStyle(textColor)
                     }
                 }
+                .onChange(of: keyholeCount) { _ in
+                    triggerHapticsIfEnabled()
+                }
                 .help("Max 2 per Keyhole (2 Keyholes)")
             }
 
@@ -147,13 +175,16 @@ struct AutonomousFlightSkillsCalculator: View {
                     ForEach(LandingOption.allCases) { option in
                         Text(option.rawValue)
                             .tag(option)
-                            .foregroundStyle(.green) // Make all options green
+                            .foregroundStyle(.green)
                     }
                 }
                 .pickerStyle(MenuPickerStyle())
+                .onChange(of: selectedLandingOption) { _ in
+                    triggerHapticsIfEnabled()
+                }
             }
         }
-        .accentColor(.green) // Make all + and - buttons green
+        .accentColor(.green) // Make + and - buttons green
         .navigationTitle("Autonomous Flight Calculator")
         .toolbar {
             // Clear Scores Button
@@ -161,7 +192,7 @@ struct AutonomousFlightSkillsCalculator: View {
                 Button(action: clearInputs) {
                     Image(systemName: "trash")
                 }
-                .foregroundStyle(.red) // Make the trash button red to highlight it
+                .foregroundStyle(.red)
                 .accessibilityLabel("Clear Scores")
             }
         }
@@ -180,6 +211,17 @@ struct AutonomousFlightSkillsCalculator: View {
         archGateCount = 0
         keyholeCount = 0
         selectedLandingOption = .none
+
+        // HAPTICS: Trigger on clear
+        triggerHapticsIfEnabled()
+    }
+
+    // MARK: - Haptic Trigger Helper
+    private func triggerHapticsIfEnabled() {
+        if settings.enableHaptics {
+            let generator = UIImpactFeedbackGenerator(style: .medium)
+            generator.impactOccurred()
+        }
     }
 }
 

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TeamworkScoreCalculator: View {
     @EnvironmentObject var navigation_bar_manager: NavigationBarManager
-    @EnvironmentObject var settings: UserSettings
+    @EnvironmentObject var settings: UserSettings  // Must have `@Published var enableHaptics = false`
 
     // State variables for input fields
     @State private var dropZoneTopCleared = 0
@@ -72,7 +72,7 @@ struct TeamworkScoreCalculator: View {
         return max(0, 10 - (neutralBalls + greenBalls + blueBalls))
     }
 
-    // Max counts for bean bags (do not limit based on tops cleared)
+    // Max counts for bean bags
     var maxGreenBeanBags: Int {
         return greenBeanBags + remainingBeanBags
     }
@@ -105,9 +105,9 @@ struct TeamworkScoreCalculator: View {
             ScoreView(totalScore: totalScore, showWarning: isBeanBagConstraintViolated)
 
             // Content
-            ScrollView { // Added ScrollView to handle very small screens if necessary
+            ScrollView {
                 VStack(spacing: 10) {
-                    // Counters Grid arranged in columns
+                    // Counters Grid
                     HStack(alignment: .top, spacing: 10) {
                         // Bean Bags Column
                         VStack(alignment: .leading, spacing: 10) {
@@ -235,6 +235,12 @@ struct TeamworkScoreCalculator: View {
         blueBalls = 0
         redDroneSelection = "None"
         blueDroneSelection = "None"
+
+        // HAPTICS: Trigger feedback on clear (if enabled)
+        if settings.enableHaptics {
+            let generator = UIImpactFeedbackGenerator(style: .medium)
+            generator.impactOccurred()
+        }
     }
 }
 
@@ -285,6 +291,7 @@ struct ScoreView: View {
 // MARK: - Counter Section
 
 struct CounterSection: View {
+    @EnvironmentObject var settings: UserSettings  // Access haptic preference
     let title: String
     @Binding var count: Int
     let maxCount: Int
@@ -305,6 +312,11 @@ struct CounterSection: View {
                 Button(action: {
                     if count > 0 {
                         count -= 1
+                        // HAPTICS: Trigger on decrement
+                        if settings.enableHaptics {
+                            let generator = UIImpactFeedbackGenerator(style: .medium)
+                            generator.impactOccurred()
+                        }
                     }
                 }) {
                     Image(systemName: "minus.circle.fill")
@@ -319,6 +331,11 @@ struct CounterSection: View {
                 Button(action: {
                     if count < maxCount {
                         count += 1
+                        // HAPTICS: Trigger on increment
+                        if settings.enableHaptics {
+                            let generator = UIImpactFeedbackGenerator(style: .medium)
+                            generator.impactOccurred()
+                        }
                     }
                 }) {
                     Image(systemName: "plus.circle.fill")
@@ -442,6 +459,7 @@ struct DroneBox: View {
 // MARK: - Drone Option Button
 
 struct DroneOptionButton: View {
+    @EnvironmentObject var settings: UserSettings  // Access haptic preference
     let label: String
     let isSelected: Bool
     let isDisabled: Bool
@@ -451,6 +469,11 @@ struct DroneOptionButton: View {
     var body: some View {
         Button(action: {
             action()
+            // HAPTICS: Trigger on drone selection
+            if settings.enableHaptics {
+                let generator = UIImpactFeedbackGenerator(style: .medium)
+                generator.impactOccurred()
+            }
         }) {
             Text(label)
                 .font(.caption)
@@ -478,7 +501,7 @@ struct TeamworkScoreCalculator_Previews: PreviewProvider {
         NavigationView {
             TeamworkScoreCalculator()
                 .environmentObject(NavigationBarManager(title: "Teamwork Score Calculator"))
-                .environmentObject(UserSettings())
+                .environmentObject(UserSettings()) // Make sure `enableHaptics` is part of UserSettings
         }
     }
 }

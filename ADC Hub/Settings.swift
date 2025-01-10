@@ -19,7 +19,6 @@ struct Settings: View {
     @EnvironmentObject var dataController: ADCHubDataController
     @EnvironmentObject var navigation_bar_manager: NavigationBarManager
    
-    
     @State var selected_button_color = UserSettings().buttonColor()
     @State var selected_top_bar_color = UserSettings().topBarColor()
     @State var selected_top_bar_content_color = UserSettings().topBarContentColor()
@@ -94,7 +93,6 @@ struct Settings: View {
                     }
                 }
                 
-                
                 Section("Appearance") {
                     ColorPicker("Top Bar Color", selection: $selected_top_bar_color, supportsOpacity: false).onChange(of: selected_top_bar_color) { _ in
                         settings.setTopBarColor(color: selected_top_bar_color)
@@ -125,6 +123,17 @@ struct Settings: View {
                             }
                         }
                     }
+                }
+                
+                // =========================
+                // NEW Haptics Section
+                // =========================
+                Section("Haptics") {
+                    Toggle("Enable Haptics", isOn: $settings.enableHaptics)
+                        .onChange(of: settings.enableHaptics) { _ in
+                            // Whenever the toggle changes, persist to UserDefaults
+                            settings.updateUserDefaults()
+                        }
                 }
                 
                 Section("Danger") {
@@ -171,14 +180,14 @@ struct Settings: View {
                 }
                 
                 Section("Developer") {
-                                        HStack {
+                    HStack {
                         Text("Version")
                         Spacer()
                         Text("\(UIApplication.appVersion!) (\(UIApplication.appBuildNumber!))\(self.mode)")
                     }
                 }
                 
-                Section("Developed by Skyler Clagg, based on Teams Ace 229V and Jelly 2733J's VRC Roboscout") {}
+                Section("Developed by Skyler Clagg,Note this app is NOT an OFFICIAL RECF App. based on Teams Ace 229V and Jelly 2733J's VRC Roboscout") {}
             }
             Link("Join the Discord Server", destination: URL(string: "https://discord.gg/KzaUshqfsZ")!).padding()
         }
