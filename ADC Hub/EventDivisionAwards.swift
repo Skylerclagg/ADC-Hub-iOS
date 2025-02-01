@@ -11,7 +11,7 @@
 
 import SwiftUI
 
-struct AllAroundChampionEligibleTeams: View {
+/*struct AllAroundChampionEligibleTeams: View {
     
     @State var event: Event
     @State var division: Division
@@ -207,7 +207,7 @@ struct AllAroundChampionEligibleTeams: View {
         }
     }
 }
-
+*/
 struct EventDivisionAwards: View {
     
     @EnvironmentObject var settings: UserSettings
