@@ -133,6 +133,7 @@ struct EventInformation: View {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Link(destination: URL(string: "https://www.robotevents.com/robot-competitions/adc/\(self.event.sku).html")!) {
                     Image(systemName: "link")
+                        .foregroundColor(settings.topBarContentColor())
                 }
                 Button(action: {
                     self.event.add_to_calendar()

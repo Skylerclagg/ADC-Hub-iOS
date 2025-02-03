@@ -265,7 +265,7 @@ struct EventDivisionAwards: View {
                                     }
                                 }
                             }
-                            if event.awards[division]![i].teams.isEmpty && event.awards[division]![i].title.contains("Excellence") && !(event.rankings[division] ?? [TeamRanking]()).isEmpty && !event.skills_rankings.isEmpty {
+                            if event.awards[division]![i].teams.isEmpty && event.awards[division]![i].title.contains("All-Around Champion") && !(event.rankings[division] ?? [TeamRanking]()).isEmpty && !event.skills_rankings.isEmpty {
                                 Spacer().frame(height: 5)
                                 Button("Show eligible teams") {
                                     if event.awards[division]![i].title.contains("Middle") {
