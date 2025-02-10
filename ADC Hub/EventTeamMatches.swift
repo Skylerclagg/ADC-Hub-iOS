@@ -96,7 +96,7 @@ struct EventTeamMatches: View {
                     var name = match.name
                     name = name.replacingOccurrences(of: "Qualifier", with: "Q")
                     name = name.replacingOccurrences(of: "Practice", with: "P")
-                    name = name.replacingOccurrences(of: "Final", with: "F")
+                    name = name.replacingOccurrences(of: "Match", with: "E")
                     name = name.replacingOccurrences(of: "#", with: "")
                     
                     // Use started time, scheduled time, or an empty string

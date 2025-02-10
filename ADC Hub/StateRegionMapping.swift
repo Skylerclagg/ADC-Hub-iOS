@@ -33,7 +33,11 @@ struct StateRegionMapping {
             "Alaska", "American Samoa", "Arizona", "California", "Colorado", "Hawaii", "Idaho", "Montana",
             "Nevada", "Oregon", "Utah", "Washington", "Wyoming",
             "British Columbia", "Alberta", "Saskatchewan", "Yukon", "Northwest Territories"
+        ],
+        "International": [
+            "Greece", "Kuwait", "Mexico", "Singapore"
         ]
+        
     ]
     
     // Invert the mapping to create a State-to-Region dictionary

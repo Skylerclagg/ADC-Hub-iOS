@@ -24,7 +24,9 @@ struct EventDivisionRow: View {
     var event: Event
 
     var body: some View {
-        NavigationLink(destination: EventDivisionView(event: event, event_teams: event_teams, division: Division(id: Int(division.split(separator: "&&")[0]) ?? 0, name: String(division.split(separator: "&&")[1])), teams_map: teams_map)
+        NavigationLink(destination: EventDivisionView(event: event,
+            event_teams: event_teams,division: Division(id: Int(division.split(separator: "&&")[0]) ?? 0,name: String(division.split(separator: "&&")[1])),
+                teams_map: teams_map)
                         .environmentObject(settings)
                         .environmentObject(favorites)
                         .environmentObject(dataController)) {
@@ -50,9 +52,6 @@ class EventDivisions: ObservableObject {
 }
 
 struct EventView: View {
-
-    // Removed watch session reference
-    // @EnvironmentObject var wcSession: WatchSession
 
     @EnvironmentObject var settings: UserSettings
     @EnvironmentObject var favorites: FavoriteStorage
@@ -116,13 +115,18 @@ struct EventView: View {
                                         .environmentObject(settings)) {
                             Text("Information")
                         }
-                        NavigationLink(destination: EventTeams(event: event, teams_map: $teams_map, event_teams: $event_teams, event_teams_list: event_teams_list)
+                        NavigationLink(destination: EventTeams(event: event,
+                                                                 teams_map: $teams_map,
+                                                                 event_teams: $event_teams,
+                                                                 event_teams_list: event_teams_list)
                                         .environmentObject(settings)
                                         .environmentObject(dataController)) {
                             Text("Teams")
                         }
                         if let team = team {
-                            NavigationLink(destination: EventTeamMatches(teams_map: $teams_map, event: event, team: team)
+                            NavigationLink(destination: EventTeamMatches(teams_map: $teams_map,
+                                                                           event: event,
+                                                                           team: team)
                                             .environmentObject(settings)
                                             .environmentObject(dataController)) {
                                 Text("\(team.number) Match List")
@@ -130,16 +134,36 @@ struct EventView: View {
                         }
                     }
                     Section("Skills") {
-                        NavigationLink(destination: EventSkillsRankings(event: event, teams_map: teams_map)
-                                        .environmentObject(settings)) {
+                        NavigationLink(destination: EventSkillsRankings(event: event,
+                            teams_map: teams_map)
+                                .environmentObject(settings)) {
                             Text("Skills Rankings")
                         }
                     }
                     Section("Divisions") {
                         List($event_divisions.event_divisions) { division in
-                            EventDivisionRow(teams_map: $teams_map, event_teams: $event_teams, division: division.wrappedValue, event: event)
+                            EventDivisionRow(teams_map: $teams_map,
+                                             event_teams: $event_teams,
+                                             division: division.wrappedValue,
+                                             event: event)
                                 .environmentObject(settings)
                                 .environmentObject(favorites)
+                        }
+                    }
+                    // New Section for Favorite Teams Match Lists:
+                    // Only show teams that are both in favorites and in this event.
+                    let favoriteEventTeams = event_teams.filter { favorites.favorite_teams.contains($0.number) }
+                    if !favoriteEventTeams.isEmpty {
+                        Section("Favorite Teams Match Lists") {
+                            ForEach(favoriteEventTeams, id: \.id) { favTeam in
+                                NavigationLink(destination: EventTeamMatches(teams_map: $teams_map,
+                                                                               event: event,
+                                                                               team: favTeam)
+                                                .environmentObject(settings)
+                                                .environmentObject(dataController)) {
+                                    Text("\(favTeam.number) Match List")
+                                }
+                            }
                         }
                     }
                 }
@@ -161,11 +185,11 @@ struct EventView: View {
                 Button(action: {
                     if let index = favorites.favorite_events.firstIndex(of: event.sku) {
                         favorites.favorite_events.remove(at: index)
-                        defaults.set(favorites.favorite_events, forKey: "favorite_events")
+                        UserDefaults.standard.set(favorites.favorite_events, forKey: "favorite_events")
                         favorited = false
                     } else {
                         favorites.favorite_events.append(self.event.sku)
-                        defaults.set(favorites.favorite_events, forKey: "favorite_events")
+                        UserDefaults.standard.set(favorites.favorite_events, forKey: "favorite_events")
                         favorited = true
                     }
                 }, label: {
